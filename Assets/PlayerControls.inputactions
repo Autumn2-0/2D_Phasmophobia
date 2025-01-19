@@ -1,1 +1,22 @@
-{}
+{
+    "name": "PlayerControls",
+    "maps": [
+        {
+            "name": "Player",
+            "id": "a058efba-7c22-4992-8949-887b4ff59d5d",
+            "actions": [
+                {
+                    "name": "WASD",
+                    "type": "Button",
+                    "id": "7470bf66-bb06-4ff4-b7a6-e0390011b269",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": []
+        }
+    ],
+    "controlSchemes": []
+}
