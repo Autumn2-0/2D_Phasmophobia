@@ -9,7 +9,6 @@ public class GameManager : MonoBehaviour
     public static GameObject player;
     public static GameObject ghost;
     public static GhostType type;
-    public static Camera mainCamera;
     public static Vector3 mouseWorldPosition;
 
     void Start()
@@ -23,8 +22,7 @@ public class GameManager : MonoBehaviour
         ghost = GameObject.FindGameObjectWithTag("Ghost");
         System.Array values = System.Enum.GetValues(typeof(GhostType));
         type = (GhostType)values.GetValue(Random.Range(0, values.Length));
-        Debug.Log(type.ToString());     //Debug
-        mainCamera = Camera.main;
+        Debug.Log(type.ToString());
     }
 
     private void Update()
@@ -42,7 +40,7 @@ public class GameManager : MonoBehaviour
     private Vector3 GetMouseWorldPosition()
     {
         Vector3 mouseScreenPosition = Input.mousePosition;
-        Vector3 mouseWorldPosition = mainCamera.ScreenToWorldPoint(mouseScreenPosition);
+        Vector3 mouseWorldPosition = Camera.main.ScreenToWorldPoint(mouseScreenPosition);
         mouseWorldPosition.z = 0; // Ensure z is set correctly for 2D
         return mouseWorldPosition;
     }

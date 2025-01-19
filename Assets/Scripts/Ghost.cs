@@ -4,15 +4,19 @@ using UnityEngine;
 
 public class Ghost : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    public bool FreezingTemps;
+    public bool EMF;
+    public bool UV;
+    public bool Dots;
+    public bool SpiritBox;
+    public bool GhostOrbs;
+    public bool GhostWriting;
+    public bool MS;
+    public bool Scratching;
+    public bool Hallucinations;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    public bool activeEMF;
+    public bool activeUV;
+    public bool activeDots;
+    public bool activeMS;
 }
