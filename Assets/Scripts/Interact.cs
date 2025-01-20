@@ -5,7 +5,7 @@ using UnityEngine;
 public class Interact : MonoBehaviour
 {
     [Header("Interaction Settings")]
-    public float interactionRange = 5f; // The range within which the mouse must be to interact
+    public float interactionRange = 3f; // The range within which the mouse must be to interact
     public LayerMask interactableLayer; // The layer to filter interactable objects
     
     void Update()

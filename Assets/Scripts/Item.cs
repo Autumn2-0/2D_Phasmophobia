@@ -9,8 +9,9 @@ public abstract class Item : MonoBehaviour
     protected int uses = -1;
     [SerializeField]
     protected bool active = false;
-    protected float placeDistance = 5;
-    protected float throwForce = 2f;
+    protected float placeDistance = 2;
+    [SerializeField]
+    protected float throwForce = 3f;
     protected bool canPlace = true;
     protected bool held = false;
     [SerializeField]
@@ -93,7 +94,7 @@ public abstract class Item : MonoBehaviour
     {
         transform.SetParent(null);
         transform.up = GameManager.mouseWorldPosition - transform.position;
-        rb.AddForce(transform.up * throwForce);
+        rb.velocity = transform.up * throwForce;
         held = false;
         equipped = false;
     }
