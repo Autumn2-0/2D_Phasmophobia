@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class Player : MonoBehaviour
 {
@@ -14,6 +15,7 @@ public class Player : MonoBehaviour
     public GameObject playerModel;
     public float camRange;
     public float camSpeed;
+    private Vector2 movementInput;
 
     void Start()
     {
@@ -21,19 +23,25 @@ public class Player : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
     }
 
-    void Update()   
-    {
-        // Get input from keyboard (horizontal and vertical axis)
-        movement.x = Input.GetAxis("Horizontal"); // A/D or Left/Right Arrow
-        movement.y = Input.GetAxis("Vertical");   // W/S or Up/Down Arrow
+     void Update()   
+     {
+         // Get input from keyboard (horizontal and vertical axis)
+      //  movement.x = Input.GetAxis("Horizontal"); // A/D or Left/Right Arrow
+       //  movement.y = Input.GetAxis("Vertical");   // W/S or Up/Down Arrow
 
-        playerModel.transform.up = GameManager.mouseWorldPosition - transform.position;
-        cam.transform.position += (playerModel.transform.position + (Vector3)movement.normalized * camRange - cam.transform.position) * camSpeed * Time.deltaTime;
-    }
+         playerModel.transform.up = GameManager.mouseWorldPosition - transform.position;
+         cam.transform.position += (playerModel.transform.position + (Vector3)movement.normalized * camRange - cam.transform.position) * camSpeed * Time.deltaTime;
+     }
 
     void FixedUpdate()
     {
         // Apply movement to the Rigidbody2D
-        rb.velocity = movement * moveSpeed;
+        rb.velocity = movementInput * moveSpeed;
     }
+
+    private void OnMove(InputValue inputValue)
+    {
+        movementInput = inputValue.Get<Vector2>();
+    }
+
 }

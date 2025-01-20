@@ -661,6 +661,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Room
       objectReference: {fileID: 0}
+    - target: {fileID: 7820333026927104080, guid: 9660f6888f21e1a48b4743c2545254a0, type: 3}
+      propertyPath: m_Layer
+      value: 2
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -746,9 +750,17 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 5266318931592837766, guid: 002cb1b0ad2685845a482b22a30a6237, type: 3}
+      propertyPath: m_Layer
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 6196212654211930953, guid: 002cb1b0ad2685845a482b22a30a6237, type: 3}
       propertyPath: m_Name
       value: Item
+      objectReference: {fileID: 0}
+    - target: {fileID: 6196212654211930953, guid: 002cb1b0ad2685845a482b22a30a6237, type: 3}
+      propertyPath: m_Layer
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 7264032191802142862, guid: 002cb1b0ad2685845a482b22a30a6237, type: 3}
       propertyPath: m_LocalPosition.x
