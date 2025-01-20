@@ -21,7 +21,7 @@ public class Player : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
     }
 
-    void Update()
+    void Update()   
     {
         // Get input from keyboard (horizontal and vertical axis)
         movement.x = Input.GetAxis("Horizontal"); // A/D or Left/Right Arrow
