@@ -6,48 +6,61 @@ using UnityEngine;
 
 public class Room : MonoBehaviour
 {
-    public int EMF = 1;
-    public int temperature = 65;
+    public float temperature = 12;
+    public float targetTemperature = 12;
+    public float maxTempVariation = 4;
+    private float tempVariation = 0;
+    public bool GhostRoom = false;
+    public bool lights;
 
-    public GameObject lights;
+    public static List<Room> rooms = new List<Room>();
 
-    //Add to the EMF value for the room
-    public void ChangeEMF(int amount)
+    public GameObject[] normalLights;
+    public GameObject[] eventLights;
+
+    private void Start()
     {
-        EMF += amount;
+        rooms.Add(this);
+    }
+    public void SetRoomTemperature(int newTemp)
+    {
+        targetTemperature += newTemp;
 
-        EMF = Mathf.Clamp(EMF, 1, 5);
+        targetTemperature = Mathf.Clamp(temperature, 15, 65);
     }
 
-    //Add to the Temperature value for the room
-    public void ChangeTemperature(int amount)
+    private void Update()
     {
-        temperature += amount;
-
-        temperature = Mathf.Clamp(temperature, 15, 65);
-    }
-
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.CompareTag("Player"))
+        if (Mathf.Abs((targetTemperature + tempVariation) - temperature) < 0.25)
         {
-            if (lights != null) lights.SetActive(true);
+            temperature = Mathf.Lerp(temperature, targetTemperature + tempVariation, Time.deltaTime);
         }
-        else if (collision.CompareTag("Ghost"))
+        else
         {
-            ChangeTemperature(GameManager.ghost.stats.temperatureModifier);
+            tempVariation = Random.Range(-maxTempVariation, maxTempVariation);
         }
     }
 
-    private void OnTriggerExit2D(Collider2D collision)
+    public void toggleLights()
     {
-        if (collision.CompareTag("Player"))
+        lights = !lights;
+        foreach (GameObject light in normalLights)
+            light.SetActive(!light.activeSelf);
+    }
+    public static void breaker(bool power)
+    {
+        foreach (Room room in rooms)
         {
-            if (lights != null) lights.SetActive(false);
-        }
-        else if (collision.CompareTag("Ghost"))
-        {
-            ChangeTemperature(-GameManager.ghost.stats.temperatureModifier);
+            if (power)
+            {
+                foreach (GameObject light in room.normalLights)
+                    light.SetActive(room.lights);
+            }
+            if (power)
+            {
+                foreach (GameObject light in room.normalLights)
+                    light.SetActive(false);
+            }
         }
     }
 }

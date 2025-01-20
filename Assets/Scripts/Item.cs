@@ -34,18 +34,33 @@ public abstract class Item : MonoBehaviour
         }    
         else
             gameObject.SetActive(false);
+        if (held)
+        {
+            transform.localPosition = Vector3.zero;
+            transform.up = transform.parent.up;
+        }  
     }
 
     public void EquipItem()
     {
         gameObject.SetActive(true);
+        equipped = true;
+        held = true;
         Show(transform);
+        NewParent();
     }
     public void PocketItem()
     {
         if (!pocketable)
             gameObject.SetActive(true);
+        equipped = false;
+        held = true;
         Hide(transform);
+        NewParent();
+    }
+    private void NewParent()
+    {
+        transform.SetParent(GameManager.ActiveItemSlot);
     }
     protected abstract void UpdateItem();
     public void Place()

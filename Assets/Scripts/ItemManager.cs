@@ -11,7 +11,7 @@ public class ItemManager : MonoBehaviour
 
     private void Start()
     {
-        player = GameObject.FindGameObjectWithTag("Player");
+        player = GameManager.player.gameObject;
     }
 
     void Update()

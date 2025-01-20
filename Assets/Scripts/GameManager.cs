@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using UnityEngine;
 using static UnityEngine.Rendering.DebugUI;
 
@@ -7,6 +8,7 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
     public static Player player;
+    public static Transform ActiveItemSlot;
     public static Ghost ghost;
     public static Vector3 mouseWorldPosition;
 
@@ -18,7 +20,8 @@ public class GameManager : MonoBehaviour
             Destroy(gameObject);
 
         player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
-        //ghost = GameObject.FindGameObjectWithTag("Ghost").GetComponent<Ghost>();
+        ghost = GameObject.FindGameObjectWithTag("Ghost").GetComponent<Ghost>();
+        ActiveItemSlot = GameObject.FindGameObjectWithTag("ItemSlot").transform;
     }
 
     private void Update()

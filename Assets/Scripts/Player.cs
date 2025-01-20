@@ -10,12 +10,14 @@ public class Player : MonoBehaviour
 
     private Rigidbody2D rb;
     private Vector2 movement;
-    
+
     public GameObject cam;
     public GameObject playerModel;
     public float camRange;
     public float camSpeed;
     private Vector2 movementInput;
+    private Item[] items = new Item[3];
+    private int currentSlot = 0;
 
     void Start()
     {
@@ -23,25 +25,42 @@ public class Player : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
     }
 
-     void Update()   
-     {
-         // Get input from keyboard (horizontal and vertical axis)
-      //  movement.x = Input.GetAxis("Horizontal"); // A/D or Left/Right Arrow
-       //  movement.y = Input.GetAxis("Vertical");   // W/S or Up/Down Arrow
-
-         playerModel.transform.up = GameManager.mouseWorldPosition - transform.position;
-         cam.transform.position += (playerModel.transform.position + (Vector3)movement.normalized * camRange - cam.transform.position) * camSpeed * Time.deltaTime;
-     }
+    void Update()
+    {
+        movement.x = Input.GetAxis("Horizontal"); // A/D or Left/Right Arrow
+        movement.y = Input.GetAxis("Vertical");   // W/S or Up/Down Arrow
+        playerModel.transform.up = GameManager.mouseWorldPosition - transform.position;
+        cam.transform.localPosition = Vector2.Lerp((Vector2)cam.transform.localPosition, movement.normalized * camRange, camSpeed * Time.deltaTime);
+    }
 
     void FixedUpdate()
     {
         // Apply movement to the Rigidbody2D
-        rb.velocity = movementInput * moveSpeed;
+        rb.velocity = movement * moveSpeed;
+        //rb.velocity = movementInput * moveSpeed;  New Inputs weren't working. Using old system so I can test other things
     }
 
     private void OnMove(InputValue inputValue)
     {
         movementInput = inputValue.Get<Vector2>();
+    }
+
+    public void Pickup(Item item)
+    {
+        if (items[currentSlot] == null)
+        {
+            item.EquipItem();
+        }
+        else
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                if (items[i] == null)
+                {
+                    item.PocketItem();
+                }
+            }
+        }
     }
 
 }

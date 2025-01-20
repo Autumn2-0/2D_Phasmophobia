@@ -7,6 +7,7 @@ TagManager:
   - Ghost
   - Room
   - Item
+  - ItemSlot
   layers:
   - Default
   - TransparentFX
@@ -14,9 +15,9 @@ TagManager:
   - Item
   - Water
   - UI
-  - 
-  - 
-  - 
+  - Interactable
+  - Terrain
+  - Character
   - 
   - 
   - 
