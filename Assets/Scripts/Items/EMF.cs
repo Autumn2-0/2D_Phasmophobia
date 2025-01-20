@@ -10,10 +10,6 @@ public class EMF : Item
     public float maxDistance = 5;
     float percent;
     float value;
-    protected override void ItemStart()
-    {
-
-    }
     protected override void UpdateItem()
     {
         dotProduct = Vector2.Dot(transform.up, (GameManager.ghost.transform.position - transform.position).normalized);
