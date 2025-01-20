@@ -12,15 +12,13 @@ public class GameManager : MonoBehaviour
     public static Ghost ghost;
     public static Vector3 mouseWorldPosition;
 
-    void Awake()
+    private void Awake()
     {
         if (instance == null)
             instance = this;
         else
             Destroy(gameObject);
 
-        player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
-        ghost = GameObject.FindGameObjectWithTag("Ghost").GetComponent<Ghost>();
         ActiveItemSlot = GameObject.FindGameObjectWithTag("ItemSlot").transform;
     }
 

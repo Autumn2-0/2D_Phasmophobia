@@ -4,16 +4,44 @@ using UnityEngine;
 
 public class Thermometer : Item
 {
-    public float inaccuracyMax = 4f;
-    public float temp = 20;
+    public Room currentRoom;
+
+    public float inaccuracyMax = 2f;
+    public float temp = 20f;
+    public float displayTemp;
     public float targetTemp = 20;
-    float updateTime = 0;
+    float updateTime = 0f;
     public float resetTime;
     public float adjustSpeed = 0.075f;
 
+    private void Awake()
+    {
+        displayTemp = temp;
+    }
+
     protected override void UpdateItem()
     {
-        temp = Mathf.MoveTowards(temp, targetTemp, Time.deltaTime * adjustSpeed);
+        if (temp < GameManager.player.currentRoom.temperature)
+        {
+            temp += adjustSpeed * Time.deltaTime;
+            temp = (Mathf.RoundToInt(temp * 100)) / 100;
+            if (temp > currentRoom.temperature)
+            {
+                temp = currentRoom.temperature;
+            }
+        }
+        else if (temp > currentRoom.temperature)
+        {
+            temp -= adjustSpeed * Time.deltaTime;
+            temp = (Mathf.RoundToInt(temp * 100)) / 100;
+            if (temp < currentRoom.temperature)
+            {
+                temp = currentRoom.temperature;
+            }
+        }
+        displayTemp = temp + Random.Range(-inaccuracyMax, inaccuracyMax);
+
+        /*temp = Mathf.MoveTowards(temp, targetTemp, Time.deltaTime * adjustSpeed);
         float value = temp + Mathf.Sqrt(Random.Range(0, inaccuracyMax * inaccuracyMax));
         value *= 100; value = Mathf.RoundToInt(value); value /= 100; 
         updateTime += Time.deltaTime;
@@ -24,14 +52,14 @@ public class Thermometer : Item
             if (active)
                 Debug.Log(value);
             updateTime -= resetTime;
-        }
+        }*/
     }
 
-    private void OnTriggerStay2D(Collider2D collision)
+    private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Room"))
         {
-            targetTemp = collision.GetComponent<Room>().temperature;
+            currentRoom = collision.GetComponent<Room>();
         }
     }
 }

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Spirit
   m_EditorClassIdentifier: 
   type: 0
-  temperatureModifier: -25
+  temperatureModifier: -12
   roamingSpeed: 3.5
   stopDistance: 1
   huntingSpeed: 7

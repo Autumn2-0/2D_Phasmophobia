@@ -16,14 +16,13 @@ public class Ghost : MonoBehaviour
     public GhostStats stats;
 
     [Header("Area")]
-    public Room ghostRoom;
     public Room currentRoom;
 
     [Header("Roaming Movement")]
 
     [Header("Hunting Movement")]
     public bool hunting = false;
-    public float huntCooldown = 300;
+    public float huntCooldown = 300f;
 
     public GhostStats[] possibleStats;
 
@@ -95,7 +94,7 @@ public class Ghost : MonoBehaviour
         if (collision.CompareTag("Room"))
         {
             currentRoom = collision.GetComponent<Room>();
-            if (ghostRoom == null) ghostRoom = currentRoom;
+            if (RoomManager.Instance.ghostRoom == null) RoomManager.Instance.ghostRoom = currentRoom;
         }
     }
 
@@ -111,7 +110,7 @@ public class Ghost : MonoBehaviour
         //Change to Roaming behaviour
 
         hunting = false;
-        ghostRoom = currentRoom;
+        RoomManager.Instance.ghostRoom = currentRoom;
         huntCooldown = stats.huntMaxCooldown;
         Debug.Log("Finished Hunt");
     }

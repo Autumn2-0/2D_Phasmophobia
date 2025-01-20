@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Myling
   m_EditorClassIdentifier: 
   type: 2
-  temperatureModifier: -25
+  temperatureModifier: -9
   roamingSpeed: 3.5
   stopDistance: 1
   huntingSpeed: 7

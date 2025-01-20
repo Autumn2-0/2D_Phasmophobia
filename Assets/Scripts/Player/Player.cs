@@ -20,6 +20,13 @@ public class Player : MonoBehaviour
     public Item[] items = new Item[3];
     public int currentSlot = 0;
 
+    public Room currentRoom;
+
+    private void Awake()
+    {
+        GameManager.player = this;
+    }
+
     void Start()
     {
         // Get the Rigidbody2D component attached to the player
@@ -132,4 +139,11 @@ public class Player : MonoBehaviour
         }
     }
 
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Room"))
+        {
+            currentRoom = collision.GetComponent<Room>();
+        }
+    }
 }

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Demon
   m_EditorClassIdentifier: 
   type: 1
-  temperatureModifier: -25
+  temperatureModifier: -9
   roamingSpeed: 3.5
   stopDistance: 1
   huntingSpeed: 7
