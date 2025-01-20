@@ -161,3 +161,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b786e09280297e459cc9246c13530ed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  FreezingTemps: 0
+  EMF: 0
+  UV: 0
+  Dots: 0
+  SpiritBox: 0
+  GhostOrbs: 0
+  GhostWriting: 0
+  MS: 0
+  Scratching: 0
+  Hallucinations: 0
+  activeEMF: 0
+  activeUV: 0
+  activeDots: 0
+  activeMS: 0
+  type: 0
+  ghostRoom: {fileID: 0}
+  currentRoom: {fileID: 0}
+  temperatureModifier: -25
+  roamingSpeed: 3.5
+  huntingSpeed: 7
+  hunting: 0
+  huntDuration: 60
+  huntCoolcown: 300

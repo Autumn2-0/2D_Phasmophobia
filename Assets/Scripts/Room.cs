@@ -31,11 +31,11 @@ public class Room : MonoBehaviour
     {
         if (collision.CompareTag("Player"))
         {
-            lights.SetActive(true);
+            if (lights != null) lights.SetActive(true);
         }
         else if (collision.CompareTag("Ghost"))
         {
-            //Add the logic for changing the temperature and EMF based on the ghost
+            ChangeTemperature(GameManager.ghost.temperatureModifier);
         }
     }
 
@@ -43,11 +43,11 @@ public class Room : MonoBehaviour
     {
         if (collision.CompareTag("Player"))
         {
-            lights.SetActive(false);
+            if (lights != null) lights.SetActive(false);
         }
         else if (collision.CompareTag("Ghost"))
         {
-            //Add the logic for changing the temperature and EMF based on the ghost
+            ChangeTemperature(-GameManager.ghost.temperatureModifier);
         }
     }
 }
