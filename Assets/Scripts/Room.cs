@@ -35,7 +35,7 @@ public class Room : MonoBehaviour
         }
         else if (collision.CompareTag("Ghost"))
         {
-            ChangeTemperature(GameManager.ghost.temperatureModifier);
+            ChangeTemperature(GameManager.ghost.stats.temperatureModifier);
         }
     }
 
@@ -47,7 +47,7 @@ public class Room : MonoBehaviour
         }
         else if (collision.CompareTag("Ghost"))
         {
-            ChangeTemperature(-GameManager.ghost.temperatureModifier);
+            ChangeTemperature(-GameManager.ghost.stats.temperatureModifier);
         }
     }
 }

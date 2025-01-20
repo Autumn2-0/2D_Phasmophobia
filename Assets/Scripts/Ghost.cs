@@ -11,22 +11,21 @@ public enum GhostType
 
 public class Ghost : MonoBehaviour
 {
+    [Header("Basic Info")]
     public GhostType type;
+    public GhostStats stats;
 
     [Header("Area")]
     public Room ghostRoom;
     public Room currentRoom;
-    public int temperatureModifier = -25;
 
     [Header("Roaming Movement")]
-    public float roamingSpeed = 3.5f;
+
     [Header("Hunting Movement")]
-    public float stopDistance = 1f;
-    public float huntingSpeed = 7f;
     public bool hunting = false;
-    public float huntDuration = 60;
     public float huntCooldown = 300;
-    public float huntMaxCooldown = 300;
+
+    public GhostStats[] possibleStats;
 
     [Header("Booleans")]
     public bool FreezingTemps;
@@ -47,10 +46,13 @@ public class Ghost : MonoBehaviour
 
     private void Awake()
     {
-        System.Array values = System.Enum.GetValues(typeof(GhostType));
-        type = (GhostType)values.GetValue(Random.Range(0, values.Length));
+        stats = possibleStats[Random.Range(0, possibleStats.Length)];
+        type = stats.type;
         Debug.Log(type.ToString());
-        huntCooldown = huntMaxCooldown;
+
+        huntCooldown = stats.huntMaxCooldown;
+
+        GameManager.ghost = this;
     }
 
     private void Update()
@@ -82,9 +84,9 @@ public class Ghost : MonoBehaviour
 
     public void HuntingMovement()
     {
-        if (Vector2.Distance(transform.position, GameManager.player.transform.position) >= stopDistance)
+        if (Vector2.Distance(transform.position, GameManager.player.transform.position) >= stats.stopDistance)
         {
-            transform.position = Vector2.MoveTowards(transform.position, GameManager.player.transform.position, huntingSpeed * Time.deltaTime);
+            transform.position = Vector2.MoveTowards(transform.position, GameManager.player.transform.position, stats.huntingSpeed * Time.deltaTime);
         }
     }
 
@@ -104,13 +106,13 @@ public class Ghost : MonoBehaviour
 
         //Change to hunting behaviour
 
-        yield return new WaitForSeconds(huntDuration);
+        yield return new WaitForSeconds(stats.huntDuration);
 
         //Change to Roaming behaviour
 
         hunting = false;
         ghostRoom = currentRoom;
-        huntCooldown = huntMaxCooldown;
+        huntCooldown = stats.huntMaxCooldown;
         Debug.Log("Finished Hunt");
     }
 }

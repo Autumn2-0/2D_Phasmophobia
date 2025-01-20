@@ -10,7 +10,7 @@ public class GameManager : MonoBehaviour
     public static Ghost ghost;
     public static Vector3 mouseWorldPosition;
 
-    void Start()
+    void Awake()
     {
         if (instance == null)
             instance = this;
@@ -18,7 +18,7 @@ public class GameManager : MonoBehaviour
             Destroy(gameObject);
 
         player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
-        ghost = GameObject.FindGameObjectWithTag("Ghost").GetComponent<Ghost>();
+        //ghost = GameObject.FindGameObjectWithTag("Ghost").GetComponent<Ghost>();
     }
 
     private void Update()
