@@ -17,8 +17,8 @@ public class Player : MonoBehaviour
     public float camRange;
     public float camSpeed;
     private Vector2 movementInput;
-    private Item[] items = new Item[3];
-    private int currentSlot = 0;
+    public Item[] items = new Item[3];
+    public int currentSlot = 0;
 
     void Start()
     {
@@ -35,36 +35,68 @@ public class Player : MonoBehaviour
 
         Item equippedItem = items[currentSlot];
         //Player Inputs
-        if (Input.GetKeyDown(KeyCode.Q))
+        if (equippedItem != null)
         {
-            equippedItem.Drop();
+            if (Input.GetKeyDown(KeyCode.Q))
+            {
+                equippedItem.Drop();
+                items[currentSlot] = null;
+                return;
+            }
+            if (Input.GetKeyDown(KeyCode.F))
+            {
+                equippedItem.Place();
+                items[currentSlot] = null;
+                return;
+            }
+            if (Input.GetMouseButtonDown(1))
+            {
+                equippedItem.Use();
+            }
+            if (Input.GetKeyDown("1"))
+            {
+                currentSlot = 0;
+                equippedItem.PocketItem();
+                if (items[currentSlot] != null)
+                    items[currentSlot].EquipItem();
+            }
+            if (Input.GetKeyDown("2"))
+            {
+                currentSlot = 1;
+                equippedItem.PocketItem();
+                if (items[currentSlot] != null)
+                    items[currentSlot].EquipItem();
+            }
+            if (Input.GetKeyDown("3"))
+            {
+                currentSlot = 2;
+                equippedItem.PocketItem();
+                if (items[currentSlot] != null)
+                    items[currentSlot].EquipItem();
+            }
         }
-        if (Input.GetKeyDown(KeyCode.F))
+        else
         {
-            equippedItem.Place();
+            if (Input.GetKeyDown("1"))
+            {
+                currentSlot = 0;
+                if (items[currentSlot] != null)
+                    items[currentSlot].EquipItem();
+            }
+            if (Input.GetKeyDown("2"))
+            {
+                currentSlot = 1;
+                if (items[currentSlot] != null)
+                    items[currentSlot].EquipItem();
+            }
+            if (Input.GetKeyDown("3"))
+            {
+                currentSlot = 2;
+                if (items[currentSlot] != null)
+                    items[currentSlot].EquipItem();
+            }
         }
-        if (Input.GetMouseButtonDown(1))
-        {
-            equippedItem.Use();
-        }
-        if (Input.GetKeyDown(KeyCode.Keypad1))
-        {
-            currentSlot = 0;
-            equippedItem.PocketItem();
-            items[currentSlot].EquipItem();
-        }
-        if (Input.GetKeyDown(KeyCode.Keypad2))
-        {
-            currentSlot = 1;
-            equippedItem.PocketItem();
-            items[currentSlot].EquipItem();
-        }
-        if (Input.GetKeyDown(KeyCode.Keypad3))
-        {
-            currentSlot = 2;
-            equippedItem.PocketItem();
-            items[currentSlot].EquipItem();
-        }
+        
     }
 
     void FixedUpdate()
@@ -84,6 +116,7 @@ public class Player : MonoBehaviour
         if (items[currentSlot] == null)
         {
             item.EquipItem();
+            items[currentSlot] = item;
         }
         else
         {
@@ -92,6 +125,8 @@ public class Player : MonoBehaviour
                 if (items[i] == null)
                 {
                     item.PocketItem();
+                    items[i] = item;
+                    return;
                 }
             }
         }

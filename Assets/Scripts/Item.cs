@@ -38,7 +38,7 @@ public abstract class Item : MonoBehaviour
         {
             transform.localPosition = Vector3.zero;
             transform.up = transform.parent.up;
-        }  
+        } 
     }
 
     public void EquipItem()
@@ -106,6 +106,8 @@ public abstract class Item : MonoBehaviour
                 uses--;
             }
             else active = false;
+        else
+            active = false;
     }
     private void Show(Transform objTransform)
     {
