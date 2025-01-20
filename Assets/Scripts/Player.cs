@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -31,6 +32,33 @@ public class Player : MonoBehaviour
         movement.y = Input.GetAxis("Vertical");   // W/S or Up/Down Arrow
         playerModel.transform.up = GameManager.mouseWorldPosition - transform.position;
         cam.transform.localPosition = Vector2.Lerp((Vector2)cam.transform.localPosition, movement.normalized * camRange, camSpeed * Time.deltaTime);
+
+        Item equippedItem = items[currentSlot];
+        //Player Inputs
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            equippedItem.Drop();
+        }
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            equippedItem.Place();
+        }
+        if (Input.GetMouseButtonDown(1))
+        {
+            equippedItem.Use();
+        }
+        if (Input.GetKeyDown(KeyCode.Keypad1))
+        {
+            currentSlot = 0;
+        }
+        if (Input.GetKeyDown(KeyCode.Keypad2))
+        {
+            currentSlot = 1;
+        }
+        if (Input.GetKeyDown(KeyCode.Keypad3))
+        {
+            currentSlot = 2;
+        }
     }
 
     void FixedUpdate()

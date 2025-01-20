@@ -27,8 +27,8 @@ public class Interact : MonoBehaviour
             {
                 //Debug.Log($"Interacted with: {hit.collider.gameObject.name}");
 
-                // Check for interaction key (E)
-                if (Input.GetKeyDown(KeyCode.E))
+                // Check for interaction key (0)
+                if (Input.GetMouseButtonDown(0))
                 {
                     HandleInteraction(hit.collider.gameObject);
                 }
