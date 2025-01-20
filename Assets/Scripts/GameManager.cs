@@ -6,9 +6,8 @@ using static UnityEngine.Rendering.DebugUI;
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
-    public static GameObject player;
-    public static GameObject ghost;
-    public static GhostType type;
+    public static Player player;
+    public static Ghost ghost;
     public static Vector3 mouseWorldPosition;
 
     void Start()
@@ -18,23 +17,13 @@ public class GameManager : MonoBehaviour
         else
             Destroy(gameObject);
 
-        player = GameObject.FindGameObjectWithTag("Player");
-        ghost = GameObject.FindGameObjectWithTag("Ghost");
-        System.Array values = System.Enum.GetValues(typeof(GhostType));
-        type = (GhostType)values.GetValue(Random.Range(0, values.Length));
-        Debug.Log(type.ToString());
+        player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
+        ghost = GameObject.FindGameObjectWithTag("Ghost").GetComponent<Ghost>();
     }
 
     private void Update()
     {
         mouseWorldPosition = GetMouseWorldPosition();
-    }
-
-    public enum GhostType
-    {
-        Spirit,
-        Demon,
-        Myling
     }
 
     private Vector3 GetMouseWorldPosition()
