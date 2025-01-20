@@ -50,14 +50,20 @@ public class Player : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Keypad1))
         {
             currentSlot = 0;
+            equippedItem.PocketItem();
+            items[currentSlot].EquipItem();
         }
         if (Input.GetKeyDown(KeyCode.Keypad2))
         {
             currentSlot = 1;
+            equippedItem.PocketItem();
+            items[currentSlot].EquipItem();
         }
         if (Input.GetKeyDown(KeyCode.Keypad3))
         {
             currentSlot = 2;
+            equippedItem.PocketItem();
+            items[currentSlot].EquipItem();
         }
     }
 
