@@ -19,6 +19,7 @@ public class Room : MonoBehaviour
     public static float maxInactiveDuration = 0.03f;
 
     public bool isGhostRoom;
+    public static float degreesPerSecond = 0.75f;
 
     public GameObject normalLights;
     public GameObject eventLights;
@@ -38,7 +39,7 @@ public class Room : MonoBehaviour
     }
     private void Update()
     {
-        temperature = Mathf.MoveTowards(temperature, targetTemperature, 0.25f * Time.deltaTime);
+        temperature = Mathf.MoveTowards(temperature, targetTemperature, degreesPerSecond * Time.deltaTime);
     }
     private IEnumerator FlickeringLights(int childIndex)
     {

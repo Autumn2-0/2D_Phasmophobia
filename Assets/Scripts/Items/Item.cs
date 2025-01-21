@@ -17,7 +17,7 @@ public abstract class Item : MonoBehaviour
     [SerializeField]
     protected bool pocketable = false;
     [SerializeField]
-    protected bool alwaysActive = false;
+    protected bool alwaysUpdate = false;
     protected bool equipped = false;
     protected Rigidbody2D rb;
     private Coroutine placingCoroutine;
@@ -25,12 +25,16 @@ public abstract class Item : MonoBehaviour
     public void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        StartItem();
     }
+
+    protected virtual void StartItem() { return; }
+
     public void Update()
     {
         if (equipped || !held || pocketable)
         {
-            if (active || alwaysActive)
+            if (active || alwaysUpdate)
                 UpdateItem();
         }    
         else
@@ -63,7 +67,7 @@ public abstract class Item : MonoBehaviour
     {
         transform.SetParent(GameManager.ActiveItemSlot);
     }
-    protected abstract void UpdateItem();
+    protected virtual void UpdateItem() { return; }
     public void Place()
     {
         if (canPlace && Vector2.Distance(GameManager.player.transform.position, GameManager.mouseWorldPosition) > placeDistance)
@@ -104,12 +108,22 @@ public abstract class Item : MonoBehaviour
             if (uses != 0)
             {
                 active = true;
+                Toggled(true);
                 uses--;
             }
-            else active = false;
+            else
+            {
+                active = false;
+            }
         else
+        {
             active = false;
+            Toggled(false);
+        }
     }
+
+    protected virtual void Toggled(bool on) { return; }
+
     private void Show(Transform objTransform)
     {
         Renderer renderer = objTransform.GetComponent<Renderer>();

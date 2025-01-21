@@ -86,10 +86,12 @@ MonoBehaviour:
   active: 0
   throwForce: 3
   pocketable: 1
-  alwaysActive: 1
+  alwaysUpdate: 1
+  currentRoom: {fileID: 0}
   inaccuracyMax: 2
   temp: 14
   displayTemp: 0
+  targetTemp: 20
   resetTime: 0.75
   adjustSpeed: 0.5
 --- !u!50 &3741530714032560726

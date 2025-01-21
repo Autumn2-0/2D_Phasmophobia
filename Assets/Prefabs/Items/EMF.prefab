@@ -84,9 +84,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   uses: -1
   active: 0
+  throwForce: 3
   pocketable: 0
+  alwaysUpdate: 0
   minDot: 0.2
   maxDistance: 8
+  directional: 1
 --- !u!50 &3830530367867147552
 Rigidbody2D:
   serializedVersion: 4
