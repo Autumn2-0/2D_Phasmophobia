@@ -9,13 +9,17 @@ public class EMF : Item
     public float minDot = 0.25f;
     public float maxDistance = 5;
     float percent;
-    float value;
+    float displayEMF;
+    public bool directional = true;
     protected override void UpdateItem()
     {
         dotProduct = Vector2.Dot(transform.up, (GameManager.ghost.transform.position - transform.position).normalized);
         distance = (GameManager.ghost.transform.position - transform.position).magnitude;
 
-        value = 1;
+        if (!directional)
+            dotProduct = 1;
+
+        displayEMF = 1;
         if (dotProduct > minDot && distance < maxDistance)
         {
             percent = dotProduct * Mathf.Sqrt((maxDistance - distance) / maxDistance);
@@ -25,10 +29,10 @@ public class EMF : Item
             if (GameManager.ghost.GetComponent<Ghost>().EMF)
                 multiplier+=1.25f;
 
-            value *= multiplier * percent;
-            value = Mathf.FloorToInt(value);
-            if (value <= 0) value = 1;
+            displayEMF *= multiplier * percent;
+            displayEMF = Mathf.FloorToInt(displayEMF);
+            if (displayEMF <= 0) displayEMF = 1;
         }
-        Debug.Log(value);
+        Debug.Log(displayEMF);
     }
 }

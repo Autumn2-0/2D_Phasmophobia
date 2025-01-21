@@ -21,38 +21,18 @@ public class Thermometer : Item
 
     protected override void UpdateItem()
     {
-        if (temp < GameManager.player.currentRoom.temperature)
-        {
-            temp += adjustSpeed * Time.deltaTime;
-            temp = (Mathf.RoundToInt(temp * 100)) / 100;
-            if (temp > currentRoom.temperature)
-            {
-                temp = currentRoom.temperature;
-            }
-        }
-        else if (temp > currentRoom.temperature)
-        {
-            temp -= adjustSpeed * Time.deltaTime;
-            temp = (Mathf.RoundToInt(temp * 100)) / 100;
-            if (temp < currentRoom.temperature)
-            {
-                temp = currentRoom.temperature;
-            }
-        }
-        displayTemp = temp + Random.Range(-inaccuracyMax, inaccuracyMax);
-
-        /*temp = Mathf.MoveTowards(temp, targetTemp, Time.deltaTime * adjustSpeed);
-        float value = temp + Mathf.Sqrt(Random.Range(0, inaccuracyMax * inaccuracyMax));
-        value *= 100; value = Mathf.RoundToInt(value); value /= 100; 
+        temp = Mathf.MoveTowards(temp, currentRoom.temperature, Time.deltaTime * adjustSpeed);
+        displayTemp = temp + Mathf.Sqrt(Random.Range(0, inaccuracyMax * inaccuracyMax));
+        displayTemp *= 100; displayTemp = Mathf.RoundToInt(displayTemp); displayTemp /= 100; 
         updateTime += Time.deltaTime;
         if (updateTime > resetTime && (!held || equipped))
         {
-            while (value <= 1 && (!GameManager.ghost.GetComponent<Ghost>().FreezingTemps))
-                value += Random.Range(0.01f, 2f);
+            while (displayTemp <= 1 && (!GameManager.ghost.GetComponent<Ghost>().FreezingTemps))
+                displayTemp += Random.Range(0.01f, 2f);
             if (active)
-                Debug.Log(value);
+                Debug.Log(displayTemp);
             updateTime -= resetTime;
-        }*/
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

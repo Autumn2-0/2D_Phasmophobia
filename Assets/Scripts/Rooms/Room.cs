@@ -10,7 +10,7 @@ public class Room : MonoBehaviour
     public bool lightsOn;
 
     public GameObject normalLights;
-    public GameObject[] eventLights;
+    public GameObject eventLights;
 
     private void Start()
     {
