@@ -9,6 +9,10 @@ public class RoomManager : MonoBehaviour
     public Room ghostRoom;
     static public List<Room> rooms = new();
 
+    bool breakerOn = false;
+    float powerUsage = 0f;
+    float maxPower = 100f;
+
     public float buildingTemperature = 12f; //celcius
 
     private void Awake()
@@ -28,6 +32,7 @@ public class RoomManager : MonoBehaviour
         if (!rooms.Contains(newRoom))
         {
             newRoom.SetTemperature(buildingTemperature);
+            newRoom.BreakerUpdate(breakerOn);
             rooms.Add(newRoom);
         }
         else
@@ -36,17 +41,27 @@ public class RoomManager : MonoBehaviour
         }
     }
 
-    public static void ToggleBreaker(bool power)
+    public void ToggleBreaker()
     {
         foreach (Room room in rooms)
         {
-            if (power & room.lightsOn)
+            room.BreakerUpdate(breakerOn);
+        }
+        RecalculatePower();
+    }
+
+    public void RecalculatePower()
+    {
+        powerUsage = 0;
+        foreach(Room room in rooms)
+        {
+            powerUsage += room.GetCurrentPower();
+        }
+        if (powerUsage > maxPower)
+        {
+            foreach (Room room in rooms)
             {
-                room.SetLightsActive(true);
-            }
-            if (!power)
-            {
-                room.SetLightsActive(false);
+                room.BreakerFailure();
             }
         }
     }

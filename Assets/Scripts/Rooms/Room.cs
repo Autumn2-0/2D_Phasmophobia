@@ -8,6 +8,8 @@ public class Room : MonoBehaviour
 {
     public float temperature = 12f; //celcius
     public bool lightsOn;
+    public bool lightsPowered;
+    public float powerUsage = 10f;
 
     public GameObject normalLights;
     public GameObject eventLights;
@@ -34,7 +36,8 @@ public class Room : MonoBehaviour
         }
         else if (collision.CompareTag("Ghost"))
         {
-            SetTemperature(GameManager.ghost.stats.temperatureModifier);
+            //SetTemperature(GameManager.ghost.stats.temperatureModifier);
+            //The Temperature is dependent on the Ghost Room, not the Ghosts Position -Andy
         }
     }
 
@@ -46,7 +49,8 @@ public class Room : MonoBehaviour
         }
         else if (collision.CompareTag("Ghost"))
         {
-            SetTemperature(-GameManager.ghost.stats.temperatureModifier);
+            //SetTemperature(-GameManager.ghost.stats.temperatureModifier);
+            //The Temperature is dependent on the Ghost Room, not the Ghosts Position -Andy
         }
     }
 
@@ -56,9 +60,41 @@ public class Room : MonoBehaviour
         normalLights.gameObject.SetActive(active);
     }
 
-    public void toggleLights()
+    public void ToggleLights()
     {
         lightsOn = !lightsOn;
-        normalLights.gameObject.SetActive(lightsOn);
+        if (lightsPowered)
+            normalLights.gameObject.SetActive(lightsOn);
+        else
+            normalLights.gameObject.SetActive(false);
+        UpdateBuildingPower();
+    }
+
+    public void BreakerUpdate(bool breakerPowered)
+    {
+        lightsPowered = breakerPowered;
+        if (lightsOn && lightsPowered)
+        {
+            normalLights.gameObject.SetActive(lightsOn);
+        }
+    }
+
+    public void BreakerFailure()
+    {
+        lightsPowered = false;
+        lightsOn = false;
+        normalLights.gameObject.SetActive(false);
+    }
+
+    public void UpdateBuildingPower()
+    {
+        RoomManager.Instance.RecalculatePower();
+    }
+
+    public float GetCurrentPower()
+    {
+        if (lightsOn && lightsPowered)
+            return powerUsage;
+        return 0;
     }
 }
