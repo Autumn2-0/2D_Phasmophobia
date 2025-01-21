@@ -21,9 +21,23 @@ public class Thermometer : Item
 
     protected override void UpdateItem()
     {
-        temp = Mathf.MoveTowards(temp, currentRoom.temperature, Time.deltaTime * adjustSpeed);
+        //Adjust Temperature Readings based on location
+        if (currentRoom != null) //Indoors
+        {
+            temp = Mathf.MoveTowards(temp, currentRoom.temperature, Time.deltaTime * adjustSpeed);
+        }
+        else //Outdoors
+        {
+            temp = Mathf.MoveTowards(temp, RoomManager.Instance.outdoorTemperature, Time.deltaTime * adjustSpeed);
+        }
+
+        //Inaccuracy
         displayTemp = temp + Mathf.Sqrt(Random.Range(0, inaccuracyMax * inaccuracyMax));
-        displayTemp *= 100; displayTemp = Mathf.RoundToInt(displayTemp); displayTemp /= 100; 
+
+        //Rounding to 2 Decimal Places
+        displayTemp *= 100; displayTemp = Mathf.RoundToInt(displayTemp); displayTemp /= 100;
+
+        //Update Display Temperature based on Reset Time
         updateTime += Time.deltaTime;
         if (updateTime > resetTime && (!held || equipped))
         {

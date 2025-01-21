@@ -17,15 +17,14 @@ public class Room : MonoBehaviour
     private void Start()
     {
         RoomManager.Instance.InstantiateRoom(this);
+        SetLightsActive(false);
     }
 
 
-    //Add to the Temperature value for the room
+    //Sets Temperature value for the room
     public void SetTemperature(float newTemp)
     {
-        temperature += newTemp;
-
-        temperature = Mathf.Clamp(temperature, -6, 12);
+        temperature = newTemp;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -57,33 +56,28 @@ public class Room : MonoBehaviour
     public void SetLightsActive(bool active)
     {
         lightsOn = active;
-        normalLights.gameObject.SetActive(active);
+        UpdateLights();
+        UpdateBuildingPower();
     }
 
     public void ToggleLights()
     {
         lightsOn = !lightsOn;
-        if (lightsPowered)
-            normalLights.gameObject.SetActive(lightsOn);
-        else
-            normalLights.gameObject.SetActive(false);
+        UpdateLights();
         UpdateBuildingPower();
     }
 
     public void BreakerUpdate(bool breakerPowered)
     {
         lightsPowered = breakerPowered;
-        if (lightsOn && lightsPowered)
-        {
-            normalLights.gameObject.SetActive(lightsOn);
-        }
+        UpdateLights();
     }
 
     public void BreakerFailure()
     {
         lightsPowered = false;
         lightsOn = false;
-        normalLights.gameObject.SetActive(false);
+        normalLights.SetActive(false);
     }
 
     public void UpdateBuildingPower()
@@ -96,5 +90,13 @@ public class Room : MonoBehaviour
         if (lightsOn && lightsPowered)
             return powerUsage;
         return 0;
+    }
+
+    public void UpdateLights()
+    {
+        if (lightsPowered)
+            normalLights.SetActive(lightsOn);
+        else
+            normalLights.SetActive(false);
     }
 }

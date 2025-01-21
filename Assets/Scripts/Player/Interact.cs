@@ -48,9 +48,9 @@ public class Interact : MonoBehaviour
     {
         if (hit.GetComponent<Item>() != null)
             GameManager.player.Pickup(hit.GetComponent<Item>());
-        /**
         else if (hit.GetComponent<Switch>() != null)
-            hit.GetComponent<Switch>().toggle;
+            hit.GetComponent<Switch>().Toggle();
+        /**
         else if (hit.GetComponent<HidingSpot>() != null)
             GameManager.player.Hide();
         **/

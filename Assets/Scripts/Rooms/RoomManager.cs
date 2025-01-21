@@ -9,11 +9,14 @@ public class RoomManager : MonoBehaviour
     public Room ghostRoom;
     static public List<Room> rooms = new();
 
-    bool breakerOn = false;
-    float powerUsage = 0f;
-    float maxPower = 100f;
+    public bool breakerOn = false;
+    public bool breakerStartsOn = false;
+
+    public float powerUsage = 0f;
+    public float maxPower = 100f;
 
     public float buildingTemperature = 12f; //celcius
+    public float outdoorTemperature = 8f; //celcius
 
     private void Awake()
     {
@@ -25,6 +28,12 @@ public class RoomManager : MonoBehaviour
         {
             Destroy(this.gameObject);
         }
+    }
+
+    public void Start()
+    {
+        breakerOn = !breakerStartsOn;
+        ToggleBreaker();
     }
 
     public void InstantiateRoom(Room newRoom)
@@ -43,6 +52,7 @@ public class RoomManager : MonoBehaviour
 
     public void ToggleBreaker()
     {
+        breakerOn = !breakerOn;
         foreach (Room room in rooms)
         {
             room.BreakerUpdate(breakerOn);
