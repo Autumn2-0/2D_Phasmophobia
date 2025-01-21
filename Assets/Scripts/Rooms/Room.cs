@@ -6,6 +6,7 @@ using UnityEngine;
 
 public class Room : MonoBehaviour
 {
+    public float targetTemperature = 12f;
     public float temperature = 12f; //celcius
     public bool lightsOn;
     public float powerUsage = 10f;
@@ -17,13 +18,16 @@ public class Room : MonoBehaviour
     public static float minInactiveDuration = 0.01f;
     public static float maxInactiveDuration = 0.03f;
 
+    public bool isGhostRoom;
 
     public GameObject normalLights;
     public GameObject eventLights;
+    public Transform ghostSpawnLocation;
 
     private void Start()
     {
-        RoomManager.Instance.InstantiateRoom(this);
+        //Rooms are now Children of Room Manager, no need for instantiation
+        //RoomManager.Instance.InstantiateRoom(this);
         SetLightsActive(false);
 
         numberOfLights = normalLights.transform.childCount;
@@ -31,6 +35,10 @@ public class Room : MonoBehaviour
         {
             StartCoroutine(FlickeringLights(i));
         }
+    }
+    private void Update()
+    {
+        temperature = Mathf.MoveTowards(temperature, targetTemperature, 0.25f * Time.deltaTime);
     }
     private IEnumerator FlickeringLights(int childIndex)
     {
@@ -52,10 +60,17 @@ public class Room : MonoBehaviour
         }
     }
 
-    //Sets Temperature value for the room
-    public void SetTemperature(float newTemp)
+    //Sets Starting Temperature
+    public void SetStartingTemperature(float newTemp)
     {
         temperature = newTemp;
+        targetTemperature = newTemp;
+    }
+
+    //Sets Temperature value for the room
+    public void SetTargetTemperature(float newTemp)
+    {
+        targetTemperature = newTemp;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

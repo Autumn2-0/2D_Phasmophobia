@@ -114,6 +114,37 @@ Transform:
   - {fileID: 728525792897544635}
   m_Father: {fileID: 1730707599373687335}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &4174876313551137644
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6867593897931479064}
+  m_Layer: 0
+  m_Name: Spawn Point
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6867593897931479064
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4174876313551137644}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1730707599373687335}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7820333026927104080
 GameObject:
   m_ObjectHideFlags: 0
@@ -148,6 +179,7 @@ Transform:
   m_Children:
   - {fileID: 6293026771817962309}
   - {fileID: 7644442106556049266}
+  - {fileID: 6867593897931479064}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!50 &96734224620603241
@@ -221,14 +253,11 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: -0.98771584, y: 2.9589698}
-      - {x: -0.9675196, y: 1.033342}
-      - {x: -2.0044441, y: 1.0550485}
-      - {x: -1.999246, y: -1.0137928}
-      - {x: -0.9680507, y: -1.0188901}
-      - {x: -0.96640915, y: -2.96553}
-      - {x: 6.0037603, y: -3.0313776}
-      - {x: 5.988408, y: 3.008774}
+    - - {x: 0, y: 1}
+      - {x: -0.95105654, y: 0.30901697}
+      - {x: -0.5877852, y: -0.80901706}
+      - {x: 0.58778536, y: -0.80901694}
+      - {x: 0.9510565, y: 0.30901712}
   m_UseDelaunayMesh: 0
 --- !u!114 &1132687337535725007
 MonoBehaviour:
@@ -242,12 +271,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ec5076522c611048a879440e580f9fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  targetTemperature: 12
   temperature: 12
   lightsOn: 0
-  lightsPowered: 0
   powerUsage: 10
   normalLights: {fileID: 3637736092751910429}
   eventLights: {fileID: 0}
+  ghostSpawnLocation: {fileID: 6867593897931479064}
 --- !u!1001 &7649054560281701856
 PrefabInstance:
   m_ObjectHideFlags: 0

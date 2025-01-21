@@ -24,36 +24,56 @@ public class Thermometer : Item
         //Adjust Temperature Readings based on location
         if (currentRoom != null) //Indoors
         {
-            temp = Mathf.MoveTowards(temp, currentRoom.temperature, Time.deltaTime * adjustSpeed);
+            targetTemp = currentRoom.temperature;
         }
         else //Outdoors
         {
-            temp = Mathf.MoveTowards(temp, RoomManager.Instance.outdoorTemperature, Time.deltaTime * adjustSpeed);
+            targetTemp = RoomManager.Instance.outdoorTemperature;
         }
 
-        //Inaccuracy
-        displayTemp = temp + Mathf.Sqrt(Random.Range(0, inaccuracyMax * inaccuracyMax));
-
-        //Rounding to 2 Decimal Places
-        displayTemp *= 100; displayTemp = Mathf.RoundToInt(displayTemp); displayTemp /= 100;
+        //Adjust Temperature
+        temp = Mathf.MoveTowards(temp, targetTemp, Time.deltaTime * adjustSpeed);
 
         //Update Display Temperature based on Reset Time
         updateTime += Time.deltaTime;
         if (updateTime > resetTime && (!held || equipped))
         {
-            while (displayTemp <= 1 && (!GameManager.ghost.GetComponent<Ghost>().FreezingTemps))
-                displayTemp += Random.Range(0.01f, 2f);
             if (active)
+            {
+                //Inaccuracy
+                float rand = Random.Range(-1f, 1f);
+                displayTemp = temp + ((Mathf.Pow(rand, 3) * inaccuracyMax + rand) /2);
+
+                //Rounding to 2 Decimal Places
+                displayTemp *= 100; displayTemp = Mathf.RoundToInt(displayTemp); displayTemp /= 100;
+
+                //Eliminates False Positives
+                if (RoomManager.Instance.breakerOn && (!GameManager.ghost.GetComponent<Ghost>().FreezingTemps || !currentRoom.isGhostRoom))
+                {
+                    while (displayTemp <= 1)
+                        displayTemp += Random.Range(0.01f, inaccuracyMax);
+                }
+
+                //Output
                 Debug.Log(displayTemp);
+            }
             updateTime -= resetTime;
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void OnTriggerStay2D(Collider2D collision)
     {
         if (collision.CompareTag("Room"))
         {
             currentRoom = collision.GetComponent<Room>();
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Room") && currentRoom == collision.GetComponent<Room>())
+        {
+            currentRoom = null;
         }
     }
 }

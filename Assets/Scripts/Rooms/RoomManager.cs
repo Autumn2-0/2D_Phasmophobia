@@ -15,8 +15,11 @@ public class RoomManager : MonoBehaviour
     public float powerUsage = 0f;
     public float maxPower = 100f;
 
-    public float buildingTemperature = 12f; //celcius
-    public float outdoorTemperature = 8f; //celcius
+    public float buildingTemperature = 20f; //celcius
+    public float outdoorTemperature = 0f; //celcius
+
+    public static float temperatureRecalculateTime = 30f;
+    public static float temperatureVariation = 4f;
 
     private void Awake()
     {
@@ -30,24 +33,42 @@ public class RoomManager : MonoBehaviour
         }
     }
 
-    public void Start()
+    public void Start() //Initialize Rooms
     {
         breakerOn = !breakerStartsOn;
         ToggleBreaker();
-    }
+        buildingTemperature = Random.Range(18f, 25f);
+        outdoorTemperature = Random.Range(-8f, 12f);
+        
+        for (int i = 0; i < transform.childCount; ++i)
+        {
+            rooms.Add(transform.GetChild(i).GetComponent<Room>());
+            if (ghostRoom == null && Random.Range(0, transform.childCount - i) == 0)
+            {
+                ghostRoom = rooms[i];
+                ghostRoom.isGhostRoom = true;
+                GameManager.ghost.gameObject.transform.position = ghostRoom.ghostSpawnLocation.position;
+            }
 
-    public void InstantiateRoom(Room newRoom)
-    {
-        if (!rooms.Contains(newRoom))
-        {
-            newRoom.SetTemperature(buildingTemperature);
-            newRoom.BreakerUpdate();
-            rooms.Add(newRoom);
+            //Initializing Temperatures
+            if (breakerOn)
+            {
+                if (ghostRoom == rooms[i])
+                {
+                    rooms[i].SetStartingTemperature(Random.Range(GameManager.ghost.stats.minRoomTemp, GameManager.ghost.stats.maxRoomTemp));
+                }
+                else
+                {
+                    rooms[i].SetStartingTemperature(buildingTemperature + Random.Range(-temperatureVariation, temperatureVariation));
+                }
+            }
+            else
+            {
+                rooms[i].SetStartingTemperature(outdoorTemperature + Random.Range(-temperatureVariation, temperatureVariation));
+            }
         }
-        else
-        {
-            Debug.LogWarning("Room '" + newRoom.name + "' already exist!");
-        }
+
+        InvokeRepeating("UpdateTemperatures", temperatureRecalculateTime, temperatureRecalculateTime);
     }
 
     public void ToggleBreaker()
@@ -58,6 +79,7 @@ public class RoomManager : MonoBehaviour
             room.BreakerUpdate();
         }
         RecalculatePower();
+        UpdateTemperatures();
     }
 
     public void RecalculatePower()
@@ -76,4 +98,36 @@ public class RoomManager : MonoBehaviour
             }
         }
     }
+
+    public void UpdateTemperatures()
+    {
+        foreach (Room room in rooms)
+        {
+            //Initializing Temperatures
+            if (breakerOn)
+            {
+                if (ghostRoom == room)
+                {
+                    room.SetTargetTemperature(Random.Range(GameManager.ghost.stats.minRoomTemp, GameManager.ghost.stats.maxRoomTemp));
+                }
+                else
+                {
+                    room.SetTargetTemperature(buildingTemperature);
+                }
+            }
+            else
+            {
+                room.SetTargetTemperature(outdoorTemperature);
+            }
+        }
+    }
+
+    public void ChangeGhostRoom(Room room)
+    {
+        ghostRoom.isGhostRoom = false;
+        ghostRoom = room;
+        ghostRoom.isGhostRoom = true;
+        UpdateTemperatures();
+    }
+
 }
