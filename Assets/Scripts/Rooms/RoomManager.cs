@@ -41,7 +41,7 @@ public class RoomManager : MonoBehaviour
         if (!rooms.Contains(newRoom))
         {
             newRoom.SetTemperature(buildingTemperature);
-            newRoom.BreakerUpdate(breakerOn);
+            newRoom.BreakerUpdate();
             rooms.Add(newRoom);
         }
         else
@@ -55,7 +55,7 @@ public class RoomManager : MonoBehaviour
         breakerOn = !breakerOn;
         foreach (Room room in rooms)
         {
-            room.BreakerUpdate(breakerOn);
+            room.BreakerUpdate();
         }
         RecalculatePower();
     }
@@ -69,6 +69,7 @@ public class RoomManager : MonoBehaviour
         }
         if (powerUsage > maxPower)
         {
+            breakerOn = false;
             foreach (Room room in rooms)
             {
                 room.BreakerFailure();
