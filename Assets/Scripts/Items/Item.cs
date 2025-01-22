@@ -9,16 +9,20 @@ public abstract class Item : MonoBehaviour
     protected int uses = -1;
     [SerializeField]
     protected bool active = false;
-    protected float placeDistance = 2;
     [SerializeField]
     protected float throwForce = 3f;
+    [SerializeField]
     protected bool canPlace = true;
-    protected bool held = false;
     [SerializeField]
     protected bool pocketable = false;
     [SerializeField]
     protected bool alwaysUpdate = false;
+
     protected bool equipped = false;
+    protected bool placed = false;
+    protected bool held = false;
+    protected float placeDistance = 2;
+
     protected Rigidbody2D rb;
     private Coroutine placingCoroutine;
     
@@ -51,8 +55,10 @@ public abstract class Item : MonoBehaviour
         gameObject.SetActive(true);
         equipped = true;
         held = true;
+        placed = false;
         Show(transform);
         NewParent();
+        Interaction();
     }
     public void PocketItem()
     {
@@ -60,26 +66,32 @@ public abstract class Item : MonoBehaviour
             gameObject.SetActive(true);
         equipped = false;
         held = true;
+        placed = false;
         Hide(transform);
         NewParent();
+        Interaction();
     }
     private void NewParent()
     {
         transform.SetParent(GameManager.ActiveItemSlot);
     }
     protected virtual void UpdateItem() { return; }
-    public void Place()
+    public bool Place()
     {
-        if (canPlace && Vector2.Distance(GameManager.player.transform.position, GameManager.mouseWorldPosition) > placeDistance)
-            return;
-
-        transform.SetParent(null);
-        transform.position = new Vector3(GameManager.mouseWorldPosition.x, GameManager.mouseWorldPosition.y, transform.position.z);
-        placingCoroutine = StartCoroutine(placing());
-        held = false;
-        equipped = false;
+        if (canPlace && Vector2.Distance(GameManager.player.transform.position, GameManager.mouseWorldPosition) < placeDistance)
+        {
+            transform.SetParent(null);
+            transform.position = new Vector3(GameManager.mouseWorldPosition.x, GameManager.mouseWorldPosition.y, transform.position.z);
+            placingCoroutine = StartCoroutine(Placing());
+            held = false;
+            equipped = false;
+            placed = true;
+            Interaction();
+            return true;
+        }
+        return false;
     }
-    private IEnumerator placing()
+    private IEnumerator Placing()
     {
         while (true)
         {
@@ -101,6 +113,7 @@ public abstract class Item : MonoBehaviour
         rb.velocity = transform.up * throwForce;
         held = false;
         equipped = false;
+        Interaction();
     }
     public virtual void Use()
     {
@@ -108,8 +121,8 @@ public abstract class Item : MonoBehaviour
             if (uses != 0)
             {
                 active = true;
-                Toggled(true);
                 uses--;
+                Interaction();
             }
             else
             {
@@ -118,11 +131,9 @@ public abstract class Item : MonoBehaviour
         else
         {
             active = false;
-            Toggled(false);
+            Interaction();
         }
     }
-
-    protected virtual void Toggled(bool on) { return; }
 
     private void Show(Transform objTransform)
     {
@@ -152,4 +163,6 @@ public abstract class Item : MonoBehaviour
             Hide(child);  // Recursive call to handle all children
         }
     }
+
+    protected abstract void Interaction();
 }

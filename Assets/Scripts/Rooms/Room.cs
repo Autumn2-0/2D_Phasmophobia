@@ -46,7 +46,7 @@ public class Room : MonoBehaviour
         while (true)
         {
             // Wait for a random interval
-            float interval = Random.Range(minInterval, maxInterval)/numberOfLights;
+            float interval = Random.Range(minInterval, maxInterval);
             yield return new WaitForSeconds(interval);
 
             // Deactivate the child

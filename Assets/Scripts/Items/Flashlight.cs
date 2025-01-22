@@ -9,6 +9,17 @@ public class Flashlight : Item
 
     protected override void UpdateItem()
     {
+        if (held && !equipped)
+        {
+            if (Input.GetKeyDown(KeyCode.T))
+            {
+                base.Use();
+                Interaction();
+            }
+        }
+    }
+    protected override void Interaction()
+    {
         if (active && (!held || equipped))
         {
             lightBeamMain.SetActive(true);
@@ -23,14 +34,6 @@ public class Flashlight : Item
         {
             lightBeamMain.SetActive(false);
             lightBeamPocket.SetActive(false);
-        }
-
-        if (held && !equipped)
-        {
-            if (Input.GetKeyDown(KeyCode.T))
-            {
-                base.Use();
-            }
         }
     }
 }

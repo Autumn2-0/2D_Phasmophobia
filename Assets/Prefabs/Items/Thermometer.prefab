@@ -85,9 +85,11 @@ MonoBehaviour:
   uses: -1
   active: 0
   throwForce: 3
+  canPlace: 0
   pocketable: 1
   alwaysUpdate: 1
-  currentRoom: {fileID: 0}
+  currentRoom:
+  - {fileID: 0}
   inaccuracyMax: 2
   temp: 14
   displayTemp: 0

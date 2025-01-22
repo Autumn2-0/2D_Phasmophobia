@@ -50,9 +50,8 @@ public class Player : MonoBehaviour
                 items[currentSlot] = null;
                 return;
             }
-            if (Input.GetKeyDown(KeyCode.F))
+            if (Input.GetKeyDown(KeyCode.F) && equippedItem.Place())
             {
-                equippedItem.Place();
                 items[currentSlot] = null;
                 return;
             }

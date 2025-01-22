@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Thermometer : Item
 {
-    public Room currentRoom;
+    public List<Room> currentRoom = new List<Room>();
 
     public float inaccuracyMax = 2f;
     public float temp = 20f;
@@ -22,9 +22,9 @@ public class Thermometer : Item
     protected override void UpdateItem()
     {
         //Adjust Temperature Readings based on location
-        if (currentRoom != null) //Indoors
+        if (currentRoom[0] != null) //Indoors
         {
-            targetTemp = currentRoom.temperature;
+            targetTemp = currentRoom[0].temperature;
         }
         else //Outdoors
         {
@@ -48,7 +48,7 @@ public class Thermometer : Item
                 displayTemp *= 100; displayTemp = Mathf.RoundToInt(displayTemp); displayTemp /= 100;
 
                 //Eliminates False Positives
-                if (RoomManager.Instance.breakerOn && (!GameManager.ghost.GetComponent<Ghost>().FreezingTemps || !currentRoom.isGhostRoom))
+                if (RoomManager.Instance.breakerOn && (!GameManager.ghost.GetComponent<Ghost>().FreezingTemps || !currentRoom[0].isGhostRoom))
                 {
                     while (displayTemp <= 1)
                         displayTemp += Random.Range(0.01f, inaccuracyMax);
@@ -61,19 +61,24 @@ public class Thermometer : Item
         }
     }
 
-    private void OnTriggerStay2D(Collider2D collision)
+    private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Room"))
         {
-            currentRoom = collision.GetComponent<Room>();
+            currentRoom.Insert(0,collision.GetComponent<Room>());
         }
     }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (collision.CompareTag("Room") && currentRoom == collision.GetComponent<Room>())
+        if (collision.CompareTag("Room"))
         {
-            currentRoom = null;
+            currentRoom.Remove(collision.GetComponent<Room>());
         }
+    }
+
+    protected override void Interaction()
+    {
+        return;
     }
 }

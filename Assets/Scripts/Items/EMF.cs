@@ -35,4 +35,9 @@ public class EMF : Item
         }
         Debug.Log(displayEMF);
     }
+
+    protected override void Interaction()
+    {
+        return;
+    }
 }
