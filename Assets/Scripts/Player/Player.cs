@@ -16,9 +16,12 @@ public class Player : MonoBehaviour
     public GameObject playerModel;
     public float camRange;
     public float camSpeed;
-    private Vector2 movementInput;
-    public Item[] items = new Item[3];
-    public int currentSlot = 0;
+    
+    private PickUp[] items = new PickUp[3];
+    private int currentSlot = 0;
+
+    public float playerReach;
+    public float throwForce = 2f;
 
     public Room currentRoom;
 
@@ -37,70 +40,56 @@ public class Player : MonoBehaviour
     {
         movement.x = Input.GetAxis("Horizontal"); // A/D or Left/Right Arrow
         movement.y = Input.GetAxis("Vertical");   // W/S or Up/Down Arrow
-        playerModel.transform.up = GameManager.mouseWorldPosition - transform.position;
+        playerModel.transform.up = GameManager.mouseWorldPosition - (Vector2)transform.position;
         cam.transform.localPosition = Vector2.Lerp((Vector2)cam.transform.localPosition, movement.normalized * camRange, camSpeed * Time.deltaTime);
 
-        Item equippedItem = items[currentSlot];
+        PickUp equippedItem = items[currentSlot];
         //Player Inputs
         if (equippedItem != null)
         {
             if (Input.GetKeyDown(KeyCode.Q))
             {
-                equippedItem.Drop();
+                equippedItem.Throw(throwForce, true);
                 items[currentSlot] = null;
                 return;
             }
-            if (Input.GetKeyDown(KeyCode.F) && equippedItem.Place())
+            if (Input.GetKeyDown(KeyCode.F) && equippedItem.GetComponent<Placeable>())
             {
                 items[currentSlot] = null;
                 return;
             }
-            if (Input.GetMouseButtonDown(1))
+            if (Input.GetMouseButtonDown(1) && equippedItem.GetComponent<Item>() != null)
             {
-                equippedItem.Use();
-            }
-            if (Input.GetKeyDown("1"))
-            {
-                currentSlot = 0;
-                equippedItem.PocketItem();
-                if (items[currentSlot] != null)
-                    items[currentSlot].EquipItem();
-            }
-            if (Input.GetKeyDown("2"))
-            {
-                currentSlot = 1;
-                equippedItem.PocketItem();
-                if (items[currentSlot] != null)
-                    items[currentSlot].EquipItem();
-            }
-            if (Input.GetKeyDown("3"))
-            {
-                currentSlot = 2;
-                equippedItem.PocketItem();
-                if (items[currentSlot] != null)
-                    items[currentSlot].EquipItem();
+                equippedItem.GetComponent<Item>().Use();
             }
         }
-        else
+        if (Input.GetMouseButtonDown(0) && Interact.instance.CanReach(transform.position, GameManager.mouseWorldPosition, playerReach))
         {
-            if (Input.GetKeyDown("1"))
-            {
-                currentSlot = 0;
-                if (items[currentSlot] != null)
-                    items[currentSlot].EquipItem();
-            }
-            if (Input.GetKeyDown("2"))
-            {
-                currentSlot = 1;
-                if (items[currentSlot] != null)
-                    items[currentSlot].EquipItem();
-            }
-            if (Input.GetKeyDown("3"))
-            {
-                currentSlot = 2;
-                if (items[currentSlot] != null)
-                    items[currentSlot].EquipItem();
-            }
+            Interact.instance.Interaction(GameManager.mouseWorldPosition);
+        }
+        if (Input.GetKeyDown("1"))
+        {
+            if (items[currentSlot] != null)
+                items[currentSlot].EquipItem(false);
+            currentSlot = 0;
+            if (items[currentSlot] != null)
+                items[currentSlot].EquipItem(true);
+        }
+        if (Input.GetKeyDown("2"))
+        {
+            if (items[currentSlot] != null)
+                items[currentSlot].EquipItem(false);
+            currentSlot = 1;
+            if (items[currentSlot] != null)
+                items[currentSlot].EquipItem(true);
+        }
+        if (Input.GetKeyDown("3"))
+        {
+            if (items[currentSlot] != null)
+                items[currentSlot].EquipItem(false);
+            currentSlot = 2;
+            if (items[currentSlot] != null)
+                items[currentSlot].EquipItem(true);
         }
         
     }
@@ -109,19 +98,13 @@ public class Player : MonoBehaviour
     {
         // Apply movement to the Rigidbody2D
         rb.velocity = movement * moveSpeed;
-        //rb.velocity = movementInput * moveSpeed;  New Inputs weren't working. Using old system so I can test other things
     }
 
-    private void OnMove(InputValue inputValue)
-    {
-        movementInput = inputValue.Get<Vector2>();
-    }
-
-    public void Pickup(Item item)
+    public void Pickup(PickUp item)
     {
         if (items[currentSlot] == null)
         {
-            item.EquipItem();
+            item.EquipItem(true);
             items[currentSlot] = item;
         }
         else
@@ -130,7 +113,7 @@ public class Player : MonoBehaviour
             {
                 if (items[i] == null)
                 {
-                    item.PocketItem();
+                    item.EquipItem(false);
                     items[i] = item;
                     return;
                 }

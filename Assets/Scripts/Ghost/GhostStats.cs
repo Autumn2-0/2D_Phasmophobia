@@ -13,6 +13,9 @@ public class GhostStats : ScriptableObject
     public int temperatureModifier = -4;
 
     [Header("Evidence Info/Traits")] //Related to different evidence gathering items
+    //Throw
+    public float throwForceMin = 2f;
+    public float throwForceMax = 4f;
     //Thermometer
     public float minRoomTemp = -4;
     public float maxRoomTemp = 0;

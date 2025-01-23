@@ -10,7 +10,7 @@ public class GameManager : MonoBehaviour
     public static Player player;
     public static Transform ActiveItemSlot;
     public static Ghost ghost;
-    public static Vector3 mouseWorldPosition;
+    public static Vector2 mouseWorldPosition;
 
     private void Awake()
     {
@@ -27,11 +27,10 @@ public class GameManager : MonoBehaviour
         mouseWorldPosition = GetMouseWorldPosition();
     }
 
-    private Vector3 GetMouseWorldPosition()
+    private Vector2 GetMouseWorldPosition()
     {
-        Vector3 mouseScreenPosition = Input.mousePosition;
-        Vector3 mouseWorldPosition = Camera.main.ScreenToWorldPoint(mouseScreenPosition);
-        mouseWorldPosition.z = 0; // Ensure z is set correctly for 2D
+        Vector2 mouseScreenPosition = Input.mousePosition;
+        Vector2 mouseWorldPosition = Camera.main.ScreenToWorldPoint(mouseScreenPosition);
         return mouseWorldPosition;
     }
 }

@@ -36,7 +36,7 @@ public class Thermometer : Item
 
         //Update Display Temperature based on Reset Time
         updateTime += Time.deltaTime;
-        if (updateTime > resetTime && (!held || equipped))
+        if (updateTime > resetTime && (!equipped || inHand))
         {
             if (active)
             {

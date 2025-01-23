@@ -4,19 +4,16 @@ using UnityEngine;
 
 public class Switch : MonoBehaviour
 {
-    public bool Breaker = false;
     public Room room;
 
     public void Toggle()
     {
-        if (Breaker)
-        {
-            RoomManager.Instance.ToggleBreaker();
-        }
-        else
-        {
-            room.ToggleLights();
-        }
+        room.ToggleLights();
         Debug.Log("Switch Used");
+    }
+
+    public bool isLightsOn()
+    {
+        return room.lightsOn;
     }
 }
