@@ -71,7 +71,11 @@ public class GhostStats : ScriptableObject
     public int numberOfFootprints = 3;
     //EMF
     [Range(0f, 1f)]
-    public float EMF5 = 0.2f;
+    public float chanceOfEMF = 0.2f;
+    //Dots Length
+    public int dotsLength = 8;
+    //Scratching
+    public bool highSanityScratching = false;
     //Hunting Sanity
     public int huntingSanity;
 
@@ -81,5 +85,7 @@ public class GhostStats : ScriptableObject
     public float stopDistance = 1f;
     public float huntingSpeed = 7f;
     public float huntDuration = 60;
-    public float huntMaxCooldown = 300;
+    public float gracePeriod = 300;
+    public float huntTimer = 60;
+    public float smudgeTimer = 30;
 }

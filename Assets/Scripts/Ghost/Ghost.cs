@@ -26,17 +26,23 @@ public class Ghost : MonoBehaviour
     [Header("Hunting Movement")]
     public bool hunting = false;
     public float huntCooldown = 300f;
+    private bool ghostCanHunt = false;
+    private bool smudged = false;
 
     public GhostStats[] possibleStats;
 
-    public int stepsRemainingUV = 0;
-    public bool activeDots;
+    private int stepsRemainingUV = 0;
+    public GameObject dotsModel;
     public bool activeMS;
     public bool activeGhostHunter;
 
-    [Header("Ghost Activity")]
+    //Ghost Activity
     private int activityOptions;
     private int activityValue;
+
+    //Spawning
+    public GameObject footprintsPrefab;
+    public GameObject scratchesPrefab;
 
     private void Awake()
     {
@@ -44,14 +50,15 @@ public class Ghost : MonoBehaviour
         type = stats.type;
         Debug.Log(type.ToString());
 
-        huntCooldown = stats.huntMaxCooldown;
+        huntCooldown = stats.gracePeriod;
 
         GameManager.ghost = this;
-        CalculateActivityTotalOptions();
     }
 
     private void CalculateActivityTotalOptions() //Calculates Total Weights of Current Ghost Activity Options
     {
+        ghostCanHunt = Sanity.Instance.sanity < stats.huntingSanity;
+
         activityOptions = 0;
         activityOptions += stats.toggleBreaker;
         activityOptions += stats.disableBreaker;
@@ -60,8 +67,9 @@ public class Ghost : MonoBehaviour
         activityOptions += stats.breakLights;
         activityOptions += stats.sabotageEquipment;
         activityOptions += stats.throwPickup;
-        activityOptions += stats.hunt;
-        if (stats.Scratching)
+        if (ghostCanHunt)
+            activityOptions += stats.hunt;
+        if (stats.Scratching && (ghostCanHunt || stats.highSanityScratching))
         {
             if (hunting)
                 activityOptions += stats.huntingScratching;
@@ -100,6 +108,7 @@ public class Ghost : MonoBehaviour
 
         if (triggerGhostActivity)
         {
+            CalculateActivityTotalOptions();
             activityValue = Random.Range(0, activityOptions);
             ConditionalAction(stats.toggleBreaker, ToggleBreaker);
             ConditionalAction(stats.disableBreaker, DisableBreaker);
@@ -109,7 +118,7 @@ public class Ghost : MonoBehaviour
             ConditionalAction(stats.sabotageEquipment, SabotageEquipment);
             ConditionalAction(stats.throwPickup, ThrowPickup);
             ConditionalAction(stats.hunt, Hunt);
-            if (stats.Scratching)
+            if (stats.Scratching && (ghostCanHunt || stats.highSanityScratching))
             {
                 if (hunting)
                     ConditionalAction(stats.huntingScratching, Scratch);
@@ -148,10 +157,6 @@ public class Ghost : MonoBehaviour
         if (huntCooldown > 0)
         {
             huntCooldown -= Time.deltaTime;
-        }
-        if (!hunting && huntCooldown <= 0)
-        {
-            StartCoroutine(HuntSequence());
         }
 
         switch (hunting)
@@ -202,6 +207,7 @@ public class Ghost : MonoBehaviour
     {
         Debug.Log("Started Hunt");
         hunting = true;
+        smudged = false;
         CalculateActivityTotalOptions();
 
         //Change to hunting behaviour
@@ -213,7 +219,9 @@ public class Ghost : MonoBehaviour
         hunting = false;
         CalculateActivityTotalOptions();
         RoomManager.Instance.ghostRoom = currentRoom;
-        huntCooldown = stats.huntMaxCooldown;
+        huntCooldown = stats.huntTimer;
+        if (smudged)
+            huntCooldown += stats.smudgeTimer;
         Debug.Log("Finished Hunt");
     }
 
@@ -245,49 +253,119 @@ public class Ghost : MonoBehaviour
     private void ToggleLights()
     {
         List<Switch> options = FindInteractionOptions(Interactable.lights);
-        Switch choice = options[Random.Range(0, options.Count)];
-        choice.Toggle();
-        choice.GhostInteraction(2);
-        Debug.Log("The Ghost Toggled Lights");
+        if (options.Count > 0)
+        {
+            Switch choice = options[Random.Range(0, options.Count)];
+            choice.Toggle();
+            choice.GhostInteraction(2);
+            Debug.Log("The Ghost Toggled Lights");
+        }
     }
     private void TurnOffLights()
     {
         List<Switch> options = FindInteractionOptions(Interactable.lights);
-        Switch choice = options[Random.Range(0, options.Count)];
-        if (choice.isLightsOn())
+        if (options.Count > 0)
         {
-            choice.Toggle();
-            choice.GhostInteraction(3);
-            Debug.Log("The Ghost Turned Off Lights");
+            Switch choice = options[Random.Range(0, options.Count)];
+            if (choice.isLightsOn())
+            {
+                choice.Toggle();
+                choice.GhostInteraction(3);
+                Debug.Log("The Ghost Turned Off Lights");
+            }
         }
     } 
     private void BreakLights()
     {
-        Debug.Log("The Ghost Broke Lights");
+        List<Switch> options = FindInteractionOptions(Interactable.lights);
+        if (options.Count > 0)
+        {
+            Switch choice = options[Random.Range(0, options.Count)];
+            choice.room.BreakLights();
+            choice.GhostInteraction(4);
+            Debug.Log("The Ghost Broke Lights");
+        }
     }
     private void SabotageEquipment()
     {
-        Debug.Log("The Ghost Sabotaged Equipment");
+        List<PickUp> options = FindInteractionOptions(Interactable.physicsObjects);
+        foreach (PickUp pickup in options)
+        {
+            if (pickup.GetComponent<Item>() && pickup.GetComponent<Item>().uses < 0)
+            {
+                pickup.GetComponent<Item>().Use();
+                pickup.gameObject.AddComponent<Interaction>().Initiate(3);
+                Debug.Log("The Ghost Sabotaged Equipment");
+                return;
+            }
+        }
     }
     private void ThrowPickup()
     {
-        Debug.Log("The Ghost Threw an Object");
+        List<PickUp> options = FindInteractionOptions(Interactable.physicsObjects);
+        if (options.Count > 0)
+        {
+            PickUp choice = options[Random.Range(0, options.Count)];
+            if (!choice.GetEquipped())
+                choice.GhostInteraction();
+            Debug.Log("The Ghost Threw an Object");
+        }
     }
     private void Hunt()
     {
+        if (!hunting && huntCooldown <= 0)
+        {
+            StartCoroutine(HuntSequence());
+        }
         Debug.Log("The Ghost is Hunting");
     }
     private void Scratch()
     {
+        Instantiate(scratchesPrefab, transform.position, transform.rotation);
         Debug.Log("The Ghost Clawed a Surface");
     }
     private void Footprints()
     {
-        Debug.Log("The Ghost has left Footprints");
+        if (stepsRemainingUV == 0)
+        {
+            stepsRemainingUV += stats.numberOfFootprints;
+            StartCoroutine(UV());
+        }
+        else
+        {
+            stepsRemainingUV += stats.numberOfFootprints;
+        }
+        Debug.Log("The Ghost is leaving Footprints");
     }
+
+    private IEnumerator UV()
+    {
+        while (stepsRemainingUV > 0)
+        {
+            // Spawn the prefab at the position and rotation of the GameObject this script is attached to
+            Instantiate(footprintsPrefab, transform.position, transform.rotation);
+            stepsRemainingUV--;
+
+            // Wait for the specified interval before the next spawn
+            yield return new WaitForSeconds(Random.Range(0.6f,0.8f));
+        }
+        yield break;
+    }
+
     private void Dots()
     {
+        if (!dotsModel.active)
+            StartCoroutine(DOTS());
         Debug.Log("The Ghost is Visible on Dots");
+    }
+
+    private IEnumerator DOTS()
+    {
+        dotsModel.SetActive(true);
+        yield return new WaitForSeconds(stats.dotsLength);
+        dotsModel.SetActive(true);
+        yield break;
+
     }
     private void Write()
     {

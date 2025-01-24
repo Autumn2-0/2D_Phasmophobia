@@ -5,8 +5,7 @@ using UnityEngine;
 
 public abstract class Item : PickUp
 {
-    [SerializeField]
-    protected int uses = -1;
+    public int uses = -1;
     [SerializeField]
     protected bool active = false;
     [SerializeField]

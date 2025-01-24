@@ -11,12 +11,21 @@ public class Interaction : MonoBehaviour
     void Start()
     {
         // Start the coroutine to handle expiration
-        StartCoroutine(ExpireAfterTime());
+        StartCoroutine(Expire());
     }
 
     public void Initiate(int value)
     {
         EMF = value;
+
+        if (GameManager.ghost.stats.EMF)
+        {
+            if (Random.value < GameManager.ghost.stats.chanceOfEMF + 0.05f * (value - 3))
+            {
+                EMF = 5;
+            }
+        }
+
         int i = 0;
         foreach (Interaction interaction in Interactions)
         {
@@ -29,9 +38,9 @@ public class Interaction : MonoBehaviour
     }
 
     // Coroutine that waits for the expiration time before deactivating or destroying the object
-    private IEnumerator ExpireAfterTime()
+    private IEnumerator Expire()
     {
-        yield return new WaitForSeconds(expirationTime);
+        yield return new WaitForSeconds (expirationTime);
         Interactions.Remove(this);
         Destroy(this);
     }

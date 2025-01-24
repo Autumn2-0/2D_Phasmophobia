@@ -3,8 +3,8 @@ using UnityEngine.Rendering;
 
 public class PickUp : Interactable
 {
-    protected bool inHand = false;
-    protected bool equipped = false;
+    public bool inHand = false;
+    public bool equipped = false;
 
     protected Rigidbody2D rb;
     protected Placeable placeable;
@@ -69,6 +69,11 @@ public class PickUp : Interactable
         equipped = false;
         inHand = false;
         Interaction();
+    }
+
+    public bool GetEquipped()
+    {
+        return equipped;
     }
 
     private void Visible(Transform objTransform, bool isVisible)

@@ -6,10 +6,9 @@ using UnityEngine;
 public abstract class Interactable : MonoBehaviour
 {
     public Type type;
-    public Interactable instance;
 
     //Generic
-    public Breaker breaker;
+    public static Breaker breaker;
     public static List<Switch> lights = new List<Switch>();
     public static List<PickUp> physicsObjects = new List<PickUp>();
 

@@ -22,19 +22,6 @@ public class Breaker : Interactable
         }
     }
 
-    public void Start()
-    {
-        if (Instance == null)
-        {
-            Instance = allInstances[Random.Range(0, allInstances.Length)];
-        }
-
-        if (Instance != this)
-        {
-            Destroy(gameObject);
-        }
-    }
-
     public static void Toggle()
     {
         RoomManager.Instance.ToggleBreaker();
