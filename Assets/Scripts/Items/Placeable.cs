@@ -14,7 +14,7 @@ public class Placeable : MonoBehaviour
 
     public bool Place()
     {
-        bool canReach = Interact.instance.CanReach(GameManager.player.transform.position, GameManager.mouseWorldPosition, GameManager.player.playerReach);
+        bool canReach = StaticInteract.instance.CanReach(GameManager.player.transform.position, GameManager.mouseWorldPosition, GameManager.player.playerReach);
         if (canReach)
         {
             pickUp.UnequipItem();

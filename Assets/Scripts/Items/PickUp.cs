@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Rendering;
 
-public class PickUp : MonoBehaviour
+public class PickUp : Interactable
 {
     protected bool inHand = false;
     protected bool equipped = false;
@@ -9,13 +9,14 @@ public class PickUp : MonoBehaviour
     protected Rigidbody2D rb;
     protected Placeable placeable;
 
-    public void Start()
+    protected override void Start()
     {
+        base.Start();
         rb = GetComponent<Rigidbody2D>();
         placeable = GetComponent<Placeable>();
     }
 
-    public void Update()
+    protected virtual void Update()
     {
         if (equipped)
         {
@@ -38,6 +39,7 @@ public class PickUp : MonoBehaviour
 
     public void Throw(float force, bool forward)
     {
+        UnequipItem();
         Vector2 direction = transform.up;
         if (!forward)
         {

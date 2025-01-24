@@ -9,7 +9,7 @@ public class Flashlight : Item
 
     protected override void UpdateItem()
     {
-        if (held && !equipped)
+        if (equipped && !inHand)
         {
             if (Input.GetKeyDown(KeyCode.T))
             {
@@ -20,7 +20,7 @@ public class Flashlight : Item
     }
     protected override void Interaction()
     {
-        if (active && (!held || equipped))
+        if (active && (!equipped || inHand))
         {
             lightBeamMain.SetActive(true);
             lightBeamPocket.SetActive(false);

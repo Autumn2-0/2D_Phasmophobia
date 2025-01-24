@@ -1,20 +1,22 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Thermometer : Item
 {
-    public List<Room> currentRoom = new List<Room>();
+    private List<Room> currentRooms = new List<Room>();
+    public Room currentRoom;
 
     public float inaccuracyMax = 2f;
-    public float temp = 20f;
+    private float temp = 20f;
     public float displayTemp;
-    public float targetTemp = 20;
+    private float targetTemp = 20;
     float updateTime = 0f;
-    public float resetTime;
-    public float adjustSpeed = 0.075f;
+    private float resetTime;
+    private float adjustSpeed = 0.075f;
 
-    private void Awake()
+    protected override void StartItem()
     {
         displayTemp = temp;
     }
@@ -22,9 +24,9 @@ public class Thermometer : Item
     protected override void UpdateItem()
     {
         //Adjust Temperature Readings based on location
-        if (currentRoom[0] != null) //Indoors
+        if (currentRoom != null) //Indoors
         {
-            targetTemp = currentRoom[0].temperature;
+            targetTemp = currentRoom.temperature;
         }
         else //Outdoors
         {
@@ -48,7 +50,7 @@ public class Thermometer : Item
                 displayTemp *= 100; displayTemp = Mathf.RoundToInt(displayTemp); displayTemp /= 100;
 
                 //Eliminates False Positives
-                if (RoomManager.Instance.breakerOn && (!GameManager.ghost.GetComponent<Ghost>().FreezingTemps || !currentRoom[0].isGhostRoom))
+                if (RoomManager.Instance.breakerOn && (!GameManager.ghost.GetComponent<Ghost>().stats.FreezingTemps || !currentRoom.isGhostRoom))
                 {
                     while (displayTemp <= 1)
                         displayTemp += Random.Range(0.01f, inaccuracyMax);
@@ -65,7 +67,8 @@ public class Thermometer : Item
     {
         if (collision.CompareTag("Room"))
         {
-            currentRoom.Insert(0,collision.GetComponent<Room>());
+            currentRooms.Insert(0,collision.GetComponent<Room>());
+            currentRoom = currentRooms[0];
         }
     }
 
@@ -73,7 +76,10 @@ public class Thermometer : Item
     {
         if (collision.CompareTag("Room"))
         {
-            currentRoom.Remove(collision.GetComponent<Room>());
+            currentRooms.Remove(collision.GetComponent<Room>());
+            if (currentRooms.Count() > 0)
+                currentRoom = currentRooms[0];
+            else currentRoom = null;
         }
     }
 

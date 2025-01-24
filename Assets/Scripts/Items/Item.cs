@@ -12,16 +12,15 @@ public abstract class Item : PickUp
     [SerializeField]
     protected bool alwaysUpdate = false;
     
-    public void Start()
+    protected override void Start()
     {
         base.Start();
-        levelOfEMF = 3;
         StartItem();
     }
 
     protected virtual void StartItem() { return; }
 
-    public void Update()
+    protected override void Update()
     {
         base.Update();
         if (active || alwaysUpdate)

@@ -12,8 +12,44 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 371d7016c83930e4bb1c4af3beafebe9, type: 3}
   m_Name: Myling
   m_EditorClassIdentifier: 
-  type: 2
-  temperatureModifier: -9
+  type: 0
+  FreezingTemps: 1
+  EMF: 1
+  UV: 1
+  Dots: 1
+  SpiritBox: 1
+  GhostOrbs: 1
+  GhostWriting: 1
+  MS: 1
+  Scratching: 1
+  Hallucinations: 1
+  GhostHunter9000: 1
+  activityPerMinute: 10
+  huntingAPM: 20
+  toggleBreaker: 3
+  disableBreaker: 1
+  toggleLights: 6
+  turnOffLights: 2
+  breakLights: 4
+  sabotageEquipment: 30
+  throwPickup: 80
+  trackable: 16
+  hallucination: 12
+  hunt: 0
+  passiveScratching: 15
+  huntingScratching: 35
+  footprints: 60
+  dots: 30
+  write: 15
+  ghostReach: 5
+  reachThroughWalls: 0
+  throwForceMin: 2
+  throwForceMax: 4
+  minRoomTemp: -4
+  maxRoomTemp: 0
+  numberOfFootprints: 3
+  EMF5: 0.2
+  huntingSanity: 0
   roamingSpeed: 3.5
   stopDistance: 1
   huntingSpeed: 7

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Breaker : MonoBehaviour
+public class Breaker : Interactable
 {
     public static Breaker Instance;
 
@@ -10,9 +10,23 @@ public class Breaker : MonoBehaviour
 
     void Awake()
     {
+        allInstances = FindObjectsOfType<Breaker>();
         if (Instance == null)
         {
-            Instance = FindObjectsOfType<Breaker>()[Random.Range(0, allInstances.Length)];
+            Instance = allInstances[Random.Range(0, allInstances.Length)];
+        }
+
+        if (Instance != this)
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    public void Start()
+    {
+        if (Instance == null)
+        {
+            Instance = allInstances[Random.Range(0, allInstances.Length)];
         }
 
         if (Instance != this)
@@ -24,10 +38,26 @@ public class Breaker : MonoBehaviour
     public static void Toggle()
     {
         RoomManager.Instance.ToggleBreaker();
-        Debug.Log("Breaker Toggled");
     }
     public static bool isBreakerOn()
     {
         return RoomManager.Instance.breakerOn;
+    }
+
+    public void GhostInteraction(bool toggle)
+    {
+        if (toggle)
+        {
+            Toggle();
+            gameObject.AddComponent<Interaction>().Initiate(3);
+        }
+        else
+        {
+            if (isBreakerOn())
+            {
+                Toggle();
+                gameObject.AddComponent<Interaction>().Initiate(3);
+            }
+        }
     }
 }

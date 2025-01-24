@@ -114,11 +114,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7801bfa9b96728e40b72b742f2fd67da, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  type: 14
   uses: -1
   active: 0
-  throwForce: 3
-  canPlace: 1
-  pocketable: 0
   alwaysUpdate: 1
   visuals: {fileID: 1400767156959965815}
   closed: {r: 0.3372549, g: 0.14901961, b: 0.050980393, a: 1}

@@ -82,20 +82,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55960a3fbcc55ad4eb33351ac6a8b5c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  type: 4
   uses: -1
   active: 0
-  throwForce: 3
-  canPlace: 0
-  pocketable: 1
   alwaysUpdate: 1
-  currentRoom:
-  - {fileID: 0}
+  currentRoom: {fileID: 0}
   inaccuracyMax: 2
-  temp: 14
   displayTemp: 0
-  targetTemp: 20
-  resetTime: 0.75
-  adjustSpeed: 0.5
 --- !u!50 &3741530714032560726
 Rigidbody2D:
   serializedVersion: 4

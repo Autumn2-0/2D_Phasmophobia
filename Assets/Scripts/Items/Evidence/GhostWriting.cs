@@ -5,7 +5,6 @@ using UnityEngine;
 public class GhostWriting : Item
 {
     public SpriteRenderer visuals;
-    private static List<GhostWriting> books = new();
 
     //Art
     public Color closed;
@@ -23,7 +22,7 @@ public class GhostWriting : Item
     {
         if (itemSpecific)
         {
-            if (GameManager.ghost.GhostWriting)
+            if (GameManager.ghost.stats.GhostWriting)
             {
                 if (Random.value < writingChance)
                 {
@@ -36,10 +35,21 @@ public class GhostWriting : Item
                     return 0;
                 }
             }
+            else
+            {
+                return base.GhostInteraction();
+            }
         }
         else
         {
-            return base.GhostInteraction();
+            if (placeable.placed)
+            {
+                return 0;
+            }
+            else
+            {
+                return base.GhostInteraction();
+            }
         }
     }
 

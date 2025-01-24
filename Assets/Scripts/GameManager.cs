@@ -18,7 +18,8 @@ public class GameManager : MonoBehaviour
             instance = this;
         else
             Destroy(gameObject);
-
+        player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
+        ghost = GameObject.FindGameObjectWithTag("Ghost").GetComponent<Ghost>();
         ActiveItemSlot = GameObject.FindGameObjectWithTag("ItemSlot").transform;
     }
 

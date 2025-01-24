@@ -1,3 +1,4 @@
+using UnityEngine.Rendering.Universal;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -112,6 +113,12 @@ public class Room : MonoBehaviour
         lightsOn = !lightsOn;
         UpdateLights();
         UpdateBuildingPower();
+    }
+
+    public void BreakLights()
+    {
+        GetComponentInChildren<Light2D>().intensity = 0.05f;
+        powerUsage = 4;
     }
 
     public void BreakerUpdate()

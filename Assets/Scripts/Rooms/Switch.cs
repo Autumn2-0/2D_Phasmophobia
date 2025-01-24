@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Switch : MonoBehaviour
+public class Switch : Interactable
 {
     public Room room;
 
@@ -15,5 +15,10 @@ public class Switch : MonoBehaviour
     public bool isLightsOn()
     {
         return room.lightsOn;
+    }
+
+    public void GhostInteraction(int EMF)
+    {
+        gameObject.AddComponent<Interaction>().Initiate(EMF);
     }
 }

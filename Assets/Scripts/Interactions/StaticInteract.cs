@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-public class Interact : MonoBehaviour
+public class StaticInteract : MonoBehaviour
 {
     [Header("Interaction Settings")]
-    public LayerMask interactableLayer = LayerMask.GetMask("Walls");
-    public LayerMask wallLayer = LayerMask.GetMask("Interactable");
+    public LayerMask interactableLayer;
+    public LayerMask wallLayer;
     [HideInInspector]
-    public static Interact instance;
+    public static StaticInteract instance;
 
     public void Start()
     {
@@ -18,7 +18,7 @@ public class Interact : MonoBehaviour
         else
             Destroy(this);
     }
-    public bool CanReach(Vector2 startPos, Vector2 endPos, float range)
+    public bool CanReach(Vector2 startPos, Vector2 endPos, float range, bool ignoreWalls = false)
     {
         float distance = Vector2.Distance(startPos, endPos);
         if (distance > range)
@@ -26,7 +26,7 @@ public class Interact : MonoBehaviour
             return false;
         }
         RaycastHit2D ray = Physics2D.Raycast(startPos, endPos - startPos, distance, wallLayer);
-        if (ray.collider != null)
+        if (ray.collider != null && !ignoreWalls)
         {
             return false;
         }

@@ -10,10 +10,11 @@ GameObject:
   m_Component:
   - component: {fileID: 6616748033017834497}
   - component: {fileID: 6487632302660542088}
-  - component: {fileID: 1276643722672885856}
   - component: {fileID: 3830530367867147552}
-  m_Layer: 0
-  m_Name: EMF
+  - component: {fileID: 1276643722672885856}
+  - component: {fileID: 7156443651569872435}
+  m_Layer: 6
+  m_Name: GhostHunter9000
   m_TagString: Item
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -70,26 +71,6 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 0.25
---- !u!114 &1276643722672885856
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3585136445178952694}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2f718d44597b7b044b279c949c9d0db6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  uses: -1
-  active: 0
-  throwForce: 3
-  pocketable: 0
-  alwaysUpdate: 0
-  minDot: 0.2
-  maxDistance: 8
-  directional: 1
 --- !u!50 &3830530367867147552
 Rigidbody2D:
   serializedVersion: 4
@@ -103,20 +84,52 @@ Rigidbody2D:
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 1
-  m_LinearDrag: 0.1
+  m_LinearDrag: 4
   m_AngularDrag: 0.05
   m_GravityScale: 0
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 320
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &1276643722672885856
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3585136445178952694}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f718d44597b7b044b279c949c9d0db6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: 6
+  uses: -1
+  active: 0
+  alwaysUpdate: 0
+  minDot: 0.2
+  maxDistance: 8
+  minReading: 0.3
+--- !u!114 &7156443651569872435
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3585136445178952694}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d299d33c36cd03488bb11903a76a7b5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  placed: 0
 --- !u!1 &4318548820973839112
 GameObject:
   m_ObjectHideFlags: 0

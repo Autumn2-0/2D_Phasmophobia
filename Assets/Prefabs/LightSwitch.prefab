@@ -143,5 +143,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d1ec055dc8132da47addc119a9585bee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Breaker: 0
+  type: 1
   room: {fileID: 0}

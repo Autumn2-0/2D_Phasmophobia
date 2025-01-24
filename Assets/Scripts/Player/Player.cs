@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -17,12 +18,13 @@ public class Player : MonoBehaviour
     public float camRange;
     public float camSpeed;
     
-    private PickUp[] items = new PickUp[3];
-    private int currentSlot = 0;
+    public PickUp[] items = new PickUp[3];
+    public int currentSlot = 0;
 
-    public float playerReach;
+    public float playerReach = 2.5f;
     public float throwForce = 2f;
 
+    private List<Room> currentRooms = new List<Room>();
     public Room currentRoom;
 
     private void Awake()
@@ -55,7 +57,8 @@ public class Player : MonoBehaviour
             }
             if (Input.GetKeyDown(KeyCode.F) && equippedItem.GetComponent<Placeable>())
             {
-                items[currentSlot] = null;
+                if (equippedItem.GetComponent<Placeable>() != null && equippedItem.GetComponent<Placeable>().Place())
+                    items[currentSlot] = null;
                 return;
             }
             if (Input.GetMouseButtonDown(1) && equippedItem.GetComponent<Item>() != null)
@@ -63,9 +66,9 @@ public class Player : MonoBehaviour
                 equippedItem.GetComponent<Item>().Use();
             }
         }
-        if (Input.GetMouseButtonDown(0) && Interact.instance.CanReach(transform.position, GameManager.mouseWorldPosition, playerReach))
+        if (Input.GetMouseButtonDown(0) && StaticInteract.instance.CanReach(transform.position, GameManager.mouseWorldPosition, playerReach))
         {
-            Interact.instance.Interaction(GameManager.mouseWorldPosition);
+            StaticInteract.instance.Interaction(GameManager.mouseWorldPosition);
         }
         if (Input.GetKeyDown("1"))
         {
@@ -125,7 +128,19 @@ public class Player : MonoBehaviour
     {
         if (collision.CompareTag("Room"))
         {
-            currentRoom = collision.GetComponent<Room>();
+            currentRooms.Insert(0, collision.GetComponent<Room>());
+            currentRoom = currentRooms[0];
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Room"))
+        {
+            currentRooms.Remove(collision.GetComponent<Room>());
+            if (currentRooms.Count() > 0)
+                currentRoom = currentRooms[0];
+            else currentRoom = null;
         }
     }
 }
