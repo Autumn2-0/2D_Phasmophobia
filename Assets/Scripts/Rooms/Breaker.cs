@@ -36,14 +36,14 @@ public class Breaker : Interactable
         if (toggle)
         {
             Toggle();
-            gameObject.AddComponent<Interaction>().Initiate(3);
+            InteractionMarking.Instantiate(gameObject, 3);
         }
         else
         {
             if (isBreakerOn())
             {
                 Toggle();
-                gameObject.AddComponent<Interaction>().Initiate(3);
+                InteractionMarking.Instantiate(gameObject, 3);
             }
         }
     }

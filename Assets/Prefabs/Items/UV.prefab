@@ -267,8 +267,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 5
+  inHand: 0
+  equipped: 0
   uses: -1
   active: 0
   alwaysUpdate: 1
   GlowRate: 0
-  range: 2.5
+  GlowMod: 0.7
+  range: 1.5

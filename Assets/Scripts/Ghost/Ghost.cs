@@ -294,7 +294,7 @@ public class Ghost : MonoBehaviour
             if (pickup.GetComponent<Item>() && pickup.GetComponent<Item>().uses < 0)
             {
                 pickup.GetComponent<Item>().Use();
-                pickup.gameObject.AddComponent<Interaction>().Initiate(3);
+                InteractionMarking.Instantiate(pickup.gameObject, 3);
                 Debug.Log("The Ghost Sabotaged Equipment");
                 return;
             }
@@ -354,7 +354,7 @@ public class Ghost : MonoBehaviour
 
     private void Dots()
     {
-        if (!dotsModel.active)
+        if (!dotsModel.activeSelf)
             StartCoroutine(DOTS());
         Debug.Log("The Ghost is Visible on Dots");
     }

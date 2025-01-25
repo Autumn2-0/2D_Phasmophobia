@@ -38,7 +38,7 @@ public class Sanity : MonoBehaviour
 
         foreach (Light2D light in lights)
         {
-            if (!light.gameObject.active) continue;
+            if (!light.gameObject.activeSelf) continue;
 
             // Check if the light affects the point
             float distance = Vector2.Distance(light.transform.position, point);

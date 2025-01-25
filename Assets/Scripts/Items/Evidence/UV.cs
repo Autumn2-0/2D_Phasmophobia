@@ -6,10 +6,11 @@ public class UV : Item
 {
 
     public float GlowRate = 0f;
+    public float GlowMod = 0.4f;
     private Animator anim;
     public float range = 3f;
 
-    public static List<Footprints> footprints;
+    public static List<Footprints> footprints = new List<Footprints>();
     protected override void StartItem()
     {
         anim = GetComponent<Animator>();
@@ -23,11 +24,15 @@ public class UV : Item
         }
         anim.SetBool("IsActive", active);
 
-        foreach (Footprints footprint in footprints)
+        if (active)
         {
-            if (StaticInteract.instance.CanReach(transform.position, footprint.transform.position, range))
+            foreach (Footprints footprint in footprints)
             {
-                footprint.visibility += GlowRate * Time.deltaTime;
+                bool canReach = StaticInteract.instance.CanReach(transform.position, footprint.transform.position, range);
+                if (canReach)
+                {
+                    footprint.visibility += GlowRate * GlowMod * Time.deltaTime;
+                }
             }
         }
     }

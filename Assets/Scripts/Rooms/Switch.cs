@@ -19,6 +19,6 @@ public class Switch : Interactable
 
     public void GhostInteraction(int EMF)
     {
-        gameObject.AddComponent<Interaction>().Initiate(EMF);
+        InteractionMarking.Instantiate(gameObject, EMF);
     }
 }

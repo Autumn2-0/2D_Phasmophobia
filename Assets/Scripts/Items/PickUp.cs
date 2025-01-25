@@ -33,6 +33,7 @@ public class PickUp : Interactable
     public virtual int GhostInteraction(bool itemSpecific = false)
     {
         Throw(Random.Range(GameManager.ghost.stats.throwForceMin, GameManager.ghost.stats.throwForceMax), false);
+        InteractionMarking.Instantiate(gameObject, 2);
         Interaction();
         return 2;
     }

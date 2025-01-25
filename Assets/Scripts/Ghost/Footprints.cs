@@ -3,25 +3,28 @@ using UnityEngine;
 
 public class Footprints : MonoBehaviour
 {
-    private SpriteRenderer render;
+    public SpriteRenderer render;
     public float visibility = 0f;
-    private void Start()
+    public float duration = 8f;
+    public float depletionRate = 0.1f;
+    public void Start()
     {
         UV.footprints.Add(this);
-        gameObject.AddComponent<Interaction>().Initiate(2);
         render = gameObject.GetComponent<SpriteRenderer>();
         StartCoroutine(Expire());
+        InteractionMarking.Instantiate(gameObject, 2, duration);
     }
 
-    private void Update()
+    public void Update()
     {
-        visibility = Mathf.Clamp01(visibility);
-        render.color = new Color(render.color.r, render.color.g, render.color.b, visibility * 255f);
+        visibility -= Time.deltaTime * depletionRate;
+        visibility = Mathf.Clamp(visibility, 0f, 0.6f);
+        render.color = new Color(render.color.r, render.color.g, render.color.b, visibility);
     }
 
-    private IEnumerator Expire()
+    public IEnumerator Expire()
     {
-        yield return new WaitForSeconds(5);
+        yield return new WaitForSeconds(duration);
         UV.footprints.Remove(this);
         Destroy(this.gameObject);
     }
