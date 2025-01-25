@@ -117,7 +117,7 @@ public class Room : MonoBehaviour
 
     public void BreakLights()
     {
-        GetComponentInChildren<Light2D>().intensity = 0.05f;
+        normalLights.GetComponentInChildren<Light2D>().intensity = 0.05f;
         powerUsage = 4;
     }
 

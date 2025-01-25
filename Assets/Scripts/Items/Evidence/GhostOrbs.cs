@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class GhostOrbs : Item
 {
+    public static bool inUse = false;
     protected override void StartItem()
     {
 

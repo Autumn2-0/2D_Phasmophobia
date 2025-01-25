@@ -74,10 +74,18 @@ public class GhostStats : ScriptableObject
     public float chanceOfEMF = 0.2f;
     //Dots Length
     public int dotsLength = 8;
+    public bool dotsRequireCamera = false;
     //Scratching
     public bool highSanityScratching = false;
     //Hunting Sanity
-    public int huntingSanity;
+    public bool huntingModelSwap = false;
+    [Range(0f,1f)]
+    public float huntingVisibleChance = 0.5f;
+    [Range(0f, 1f)]
+    public float visibilityToggleChance = 0.5f;
+    public int huntingSanity = 70;
+    public float blinkMinRate = 0.2f;
+    public float blinkMaxRate = 0.4f;
 
     [Header("Roaming Movement")]
     public float roamingSpeed = 3.5f;

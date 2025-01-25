@@ -17,10 +17,10 @@ public class Placeable : MonoBehaviour
         bool canReach = StaticInteract.instance.CanReach(GameManager.player.transform.position, GameManager.mouseWorldPosition, GameManager.player.playerReach);
         if (canReach)
         {
+            placed = true;
             pickUp.UnequipItem();
             transform.position = new Vector3(GameManager.mouseWorldPosition.x, GameManager.mouseWorldPosition.y, transform.position.z);
             StartCoroutine(Placing());
-            placed = true;
             return true;
         }
         return false;

@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.Burst.CompilerServices;
+using UnityEngine.Rendering.Universal;
 using UnityEngine;
 
 public enum GhostType
@@ -21,6 +21,11 @@ public class Ghost : MonoBehaviour
     private List<Room> currentRooms = new List<Room>();
     public Room currentRoom;
 
+    public List<Sprite> GhostModels;
+    private int spriteID;
+    public SpriteRenderer ghostModel;
+    public GameObject dotsModel;
+
     [Header("Roaming Movement")]
 
     [Header("Hunting Movement")]
@@ -30,10 +35,9 @@ public class Ghost : MonoBehaviour
     private bool smudged = false;
 
     public GhostStats[] possibleStats;
-
+    public bool activeDots = false;
     private int stepsRemainingUV = 0;
-    public GameObject dotsModel;
-    public bool activeMS;
+    public bool activeMS = false;
     public bool activeGhostHunter;
 
     //Ghost Activity
@@ -53,6 +57,9 @@ public class Ghost : MonoBehaviour
         huntCooldown = stats.gracePeriod;
 
         GameManager.ghost = this;
+        spriteID = Random.Range(0, GhostModels.Count());
+        ghostModel.sprite = GhostModels[spriteID];
+        ghostModel.enabled = false;
     }
 
     private void CalculateActivityTotalOptions() //Calculates Total Weights of Current Ghost Activity Options
@@ -78,9 +85,9 @@ public class Ghost : MonoBehaviour
         }
         if (stats.UV)
             activityOptions += stats.footprints;
-        if (stats.Dots)
+        if (stats.Dots && !hunting)
             activityOptions += stats.dots;
-        if (stats.GhostWriting)
+        if (stats.GhostWriting && !hunting)
             activityOptions += stats.write;
         if (stats.GhostHunter9000)
             activityOptions += stats.trackable;
@@ -127,9 +134,9 @@ public class Ghost : MonoBehaviour
             }
             if (stats.UV)
                 ConditionalAction(stats.footprints, Footprints);
-            if (stats.Dots)
+            if (stats.Dots && !hunting)
                 ConditionalAction(stats.dots, Dots);
-            if (stats.GhostWriting)
+            if (stats.GhostWriting && !hunting)
                 ConditionalAction(stats.write, Write);
             if (stats.GhostHunter9000)
                 ConditionalAction(stats.trackable, Trackable);
@@ -206,6 +213,7 @@ public class Ghost : MonoBehaviour
     public IEnumerator HuntSequence()
     {
         Debug.Log("Started Hunt");
+        ghostModel.enabled = true;
         hunting = true;
         smudged = false;
         CalculateActivityTotalOptions();
@@ -222,7 +230,31 @@ public class Ghost : MonoBehaviour
         huntCooldown = stats.huntTimer;
         if (smudged)
             huntCooldown += stats.smudgeTimer;
+        ghostModel.enabled = false;
         Debug.Log("Finished Hunt");
+    }
+
+    private IEnumerator HuntBlinking()
+    {
+        float waitTime = Random.Range(stats.blinkMinRate, stats.blinkMaxRate);
+        yield return new WaitForSeconds(waitTime);
+
+        while (hunting)
+        {
+            if (ghostModel.enabled && 2 * Random.value < stats.visibilityToggleChance + (0.5f - stats.huntingVisibleChance))
+            {
+                ghostModel.enabled = !ghostModel.enabled;
+            }
+            else if (!ghostModel.enabled && 2 * Random.value < stats.visibilityToggleChance + (stats.huntingVisibleChance - 0.5f))
+            {
+                ghostModel.enabled = !ghostModel.enabled;
+            }
+
+            waitTime = Random.Range(stats.blinkMinRate, stats.blinkMaxRate);
+            yield return new WaitForSeconds(waitTime);
+        }
+
+        ghostModel.enabled = false;
     }
 
     public List<T> FindInteractionOptions<T>(List<T> items) where T : Component
@@ -316,6 +348,7 @@ public class Ghost : MonoBehaviour
         if (!hunting && huntCooldown <= 0)
         {
             StartCoroutine(HuntSequence());
+            StartCoroutine(HuntBlinking());
         }
         Debug.Log("The Ghost is Hunting");
     }
@@ -354,22 +387,50 @@ public class Ghost : MonoBehaviour
 
     private void Dots()
     {
-        if (!dotsModel.activeSelf)
+        if (!activeDots)
+        {
+            activeDots = true;
             StartCoroutine(DOTS());
-        Debug.Log("The Ghost is Visible on Dots");
+            Debug.Log("The Ghost is Visible on Dots");
+        }
     }
 
     private IEnumerator DOTS()
     {
-        dotsModel.SetActive(true);
-        yield return new WaitForSeconds(stats.dotsLength);
-        dotsModel.SetActive(true);
-        yield break;
+        float elapsedTime = 0f;
 
+        while (elapsedTime < stats.dotsLength && !hunting)
+        {
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+        activeDots = false;
+    }
+
+    public void SetDotsVisibility(float percentVisible)
+    {
+        if (activeDots && percentVisible > 0 && (!stats.dotsRequireCamera || GhostOrbs.inUse))
+        {
+            dotsModel.SetActive(true);
+            Color c = dotsModel.GetComponent<SpriteRenderer>().color; c.a = percentVisible;
+            c = dotsModel.GetComponent<SpriteRenderer>().color = c;
+            dotsModel.GetComponent<Light2D>().intensity = percentVisible;
+        }
+        else
+        {
+            dotsModel.SetActive(false);
+        }
     }
     private void Write()
     {
-        Debug.Log("The Ghost is Writing");
+        List<GhostWriting> options = FindInteractionOptions(Interactable.books);
+        if (options.Count > 0)
+        {
+            PickUp choice = options[Random.Range(0, options.Count)];
+            if (!choice.GetEquipped())
+                InteractionMarking.Instantiate(choice.gameObject, choice.GhostInteraction(true));
+            Debug.Log("The Ghost is Writing");
+        }
     }
     private void Trackable()
     {

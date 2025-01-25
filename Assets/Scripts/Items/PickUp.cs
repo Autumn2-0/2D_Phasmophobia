@@ -32,6 +32,8 @@ public class PickUp : Interactable
 
     public virtual int GhostInteraction(bool itemSpecific = false)
     {
+        if (equipped)
+            return 0;
         Throw(Random.Range(GameManager.ghost.stats.throwForceMin, GameManager.ghost.stats.throwForceMax), false);
         InteractionMarking.Instantiate(gameObject, 2);
         Interaction();
@@ -59,6 +61,8 @@ public class PickUp : Interactable
         transform.SetParent(GameManager.ActiveItemSlot);
         inHand = mainHand;
         equipped = true;
+        if (placeable != null)
+            placeable.placed = false;
         Visible(transform, inHand);
         Interaction();
     }
