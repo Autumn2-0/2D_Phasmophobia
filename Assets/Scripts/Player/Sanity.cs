@@ -26,6 +26,9 @@ public class Sanity : MonoBehaviour
             intensity = 1;
         sanity -= (1-intensity) * (decreasePerMinute / 60f) * Time.deltaTime;
 
+        if (GameManager.player.currentRoom == RoomManager.Instance.ghostRoom)
+            sanity -= GameManager.ghost.stats.roomSanityDrain * Time.deltaTime;
+
         if (sanity < 0)
             sanity = 0;
         if (sanity > 100)
@@ -39,6 +42,7 @@ public class Sanity : MonoBehaviour
         foreach (Light2D light in lights)
         {
             if (!light.gameObject.activeSelf) continue;
+            if (light.lightType == Light2D.LightType.Global) continue;
 
             // Check if the light affects the point
             float distance = Vector2.Distance(light.transform.position, point);

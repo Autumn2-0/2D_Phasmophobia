@@ -31,6 +31,9 @@ public abstract class Interactable : MonoBehaviour
     public static List<SanityMeds> sanityMeds = new List<SanityMeds>();
     public static List<GhostHunter> ghostHunters = new List<GhostHunter>();
 
+    //Electronic
+    public static List<Item> electronics = new List<Item>();
+
     protected virtual void Start()
     {
         switch (type)

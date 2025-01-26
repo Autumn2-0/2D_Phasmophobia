@@ -78,6 +78,10 @@ public class GhostStats : ScriptableObject
     //Ghost Orbs Spawn Time
     public float orbsSpawnMin = 0.25f;
     public float orbsSpawnMax = 10f;
+    //Spirit Box
+    [Range(0f, 1f)]
+    public float responseChance = 0.25f;
+    public float spiritBoxRangeMultiplier = 1;
     //Scratching
     public bool highSanityScratching = false;
     //Hunting Sanity
@@ -89,14 +93,23 @@ public class GhostStats : ScriptableObject
     public int huntingSanity = 70;
     public float blinkMinRate = 0.2f;
     public float blinkMaxRate = 0.4f;
+    //Ghost Room
+    public float roomSanityDrain = 5f / 60;
 
     [Header("Roaming Movement")]
     public float roamingSpeed = 3.5f;
     [Header("Hunting Movement")]
     public float stopDistance = 1f;
     public float huntingSpeed = 7f;
-    public float huntDuration = 60;
-    public float gracePeriod = 300;
-    public float huntTimer = 60;
-    public float smudgeTimer = 30;
+    public float huntDuration = 60; //Length of hunt
+    public float gracePeriod = 300; //How long until first hunt
+    public float huntTimer = 60; //Time between hunts
+    public float smudgeTimer = 30; //Extra time between hunts when smudged
+    public float ghostVisionRange = 30; //How far until ghost can see you in a hunt
+    public float trackingDuration = 2.5f; //How long after being seen until ghost forgets your location
+    public float electronicsDetectionRange = 15f; //Distance at which electronics can alert ghost
+
+    public bool electronicsBoostSpeed = false; //Raiju's Special Ability
+    public float electronicsSpeedBoost = 1f;
+    public float electronicsBoostRange = 4;
 }

@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.Rendering.Universal;
 using UnityEngine;
+using static UnityEditor.Progress;
 
 public enum GhostType
 {
     Spirit,
     Demon,
-    Myling
+    Myling,
+    Deogen,
+    Raiju
 }
 
 public class Ghost : MonoBehaviour
@@ -30,9 +33,11 @@ public class Ghost : MonoBehaviour
 
     [Header("Hunting Movement")]
     public bool hunting = false;
+    public bool detectsPlayer = true;
     public float huntCooldown = 300f;
     private bool ghostCanHunt = false;
     private bool smudged = false;
+    private float lastSeenPlayerTime;
 
     public GhostStats[] possibleStats;
     public bool activeDots = false;
@@ -184,9 +189,42 @@ public class Ghost : MonoBehaviour
 
     public void HuntingMovement()
     {
+        //ElectronicsBoost
+        bool boosted = false;
+        if (stats.electronicsBoostSpeed)
+        {
+            foreach (Item item in Interactable.electronics)
+            {
+                if (StaticInteract.instance.CanReach(transform.position, item.transform.position, stats.electronicsBoostRange, stats.reachThroughWalls)) // Check if the item meets the condition
+                {
+                    boosted = true; break;
+                }
+            }
+        }
+        DetectingPlayer();
+        
+        //Need to Add Pathfinding. If boosted, hunting speed += stats.electronicsSpeedBoost
         if (Vector2.Distance(transform.position, GameManager.player.transform.position) >= stats.stopDistance)
         {
             transform.position = Vector2.MoveTowards(transform.position, GameManager.player.transform.position, stats.huntingSpeed * Time.deltaTime);
+        }
+    }
+
+    public void DetectingPlayer()
+    {
+        if (GameManager.player.detectableByElectronics && Vector2.Distance(GameManager.player.transform.position, transform.position) < stats.electronicsDetectionRange)
+        {
+            detectsPlayer = true;
+            lastSeenPlayerTime = Time.time;
+        }
+        else if (StaticInteract.instance.CanReach(GameManager.player.transform.position, transform.position, stats.ghostVisionRange))
+        {
+            detectsPlayer = true;
+            lastSeenPlayerTime = Time.time;
+        }
+        if (lastSeenPlayerTime + stats.trackingDuration < Time.time)
+        {
+            detectsPlayer = false;
         }
     }
 
@@ -338,8 +376,7 @@ public class Ghost : MonoBehaviour
         if (options.Count > 0)
         {
             PickUp choice = options[Random.Range(0, options.Count)];
-            if (!choice.GetEquipped())
-                choice.GhostInteraction();
+            choice.GhostInteraction();
             Debug.Log("The Ghost Threw an Object");
         }
     }
@@ -427,8 +464,7 @@ public class Ghost : MonoBehaviour
         if (options.Count > 0)
         {
             PickUp choice = options[Random.Range(0, options.Count)];
-            if (!choice.GetEquipped())
-                InteractionMarking.Instantiate(choice.gameObject, choice.GhostInteraction(true));
+            InteractionMarking.Instantiate(choice.gameObject, choice.GhostInteraction(true));
             Debug.Log("The Ghost is Writing");
         }
     }

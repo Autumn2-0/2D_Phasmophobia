@@ -20,6 +20,7 @@ public class GhostWriting : Item
 
     public override int GhostInteraction(bool itemSpecific)
     {
+        if (equipped) return 0;
         if (itemSpecific)
         {
             if (GameManager.ghost.stats.GhostWriting)

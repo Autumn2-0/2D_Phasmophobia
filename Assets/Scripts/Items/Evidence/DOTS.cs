@@ -16,6 +16,7 @@ public class DOTS : Item
         {
             StartCoroutine(Projectors());
         }
+        electronic = !requiresPlaced;
     }
 
     protected override void UpdateItem()

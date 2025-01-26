@@ -76,11 +76,6 @@ public class PickUp : Interactable
         Interaction();
     }
 
-    public bool GetEquipped()
-    {
-        return equipped;
-    }
-
     private void Visible(Transform objTransform, bool isVisible)
     {
         Renderer renderer = objTransform.GetComponent<Renderer>();

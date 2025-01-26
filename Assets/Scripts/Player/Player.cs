@@ -26,6 +26,7 @@ public class Player : MonoBehaviour
 
     private List<Room> currentRooms = new List<Room>();
     public Room currentRoom;
+    public bool detectableByElectronics = false;
 
     private void Awake()
     {
@@ -93,6 +94,17 @@ public class Player : MonoBehaviour
             currentSlot = 2;
             if (items[currentSlot] != null)
                 items[currentSlot].EquipItem(true);
+        }
+
+        detectableByElectronics = false;
+        foreach (var item in items)
+        {
+            Item current = item.GetComponent<Item>();
+            if (current != null)
+            {
+                if (current.electronic && current.GetActive())
+                    detectableByElectronics = true;
+            }
         }
         
     }

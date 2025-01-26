@@ -10,10 +10,15 @@ public abstract class Item : PickUp
     protected bool active = false;
     [SerializeField]
     protected bool alwaysUpdate = false;
+    public bool electronic = false;
     
     protected override void Start()
     {
         base.Start();
+        if (electronic)
+        {
+            Interactable.electronics.Add(this);
+        }
         StartItem();
     }
 
@@ -48,4 +53,7 @@ public abstract class Item : PickUp
             Interaction();
         }
     }
+
+    public bool GetActive()
+    { return active; }
 }
