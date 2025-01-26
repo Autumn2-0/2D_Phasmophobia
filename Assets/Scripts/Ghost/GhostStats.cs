@@ -75,6 +75,9 @@ public class GhostStats : ScriptableObject
     //Dots Length
     public int dotsLength = 8;
     public bool dotsRequireCamera = false;
+    //Ghost Orbs Spawn Time
+    public float orbsSpawnMin = 0.25f;
+    public float orbsSpawnMax = 10f;
     //Scratching
     public bool highSanityScratching = false;
     //Hunting Sanity

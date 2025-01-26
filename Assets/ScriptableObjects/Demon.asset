@@ -48,10 +48,22 @@ MonoBehaviour:
   minRoomTemp: -4
   maxRoomTemp: 0
   numberOfFootprints: 3
-  EMF5: 0.2
+  chanceOfEMF: 0.2
+  dotsLength: 8
+  dotsRequireCamera: 0
+  orbsSpawnMin: 0.25
+  orbsSpawnMax: 10
+  highSanityScratching: 0
+  huntingModelSwap: 0
+  huntingVisibleChance: 0.5
+  visibilityToggleChance: 0.5
   huntingSanity: 0
+  blinkMinRate: 0.2
+  blinkMaxRate: 0.4
   roamingSpeed: 3.5
   stopDistance: 1
   huntingSpeed: 7
   huntDuration: 60
-  huntMaxCooldown: 150
+  gracePeriod: 300
+  huntTimer: 60
+  smudgeTimer: 30

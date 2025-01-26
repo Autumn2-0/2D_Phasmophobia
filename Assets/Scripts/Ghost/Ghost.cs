@@ -323,7 +323,7 @@ public class Ghost : MonoBehaviour
         List<PickUp> options = FindInteractionOptions(Interactable.physicsObjects);
         foreach (PickUp pickup in options)
         {
-            if (pickup.GetComponent<Item>() && pickup.GetComponent<Item>().uses < 0)
+            if (pickup.GetComponent<Item>() && pickup.GetComponent<Item>().uses < 0 && !pickup.equipped)
             {
                 pickup.GetComponent<Item>().Use();
                 InteractionMarking.Instantiate(pickup.gameObject, 3);
