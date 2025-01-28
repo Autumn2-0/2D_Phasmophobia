@@ -24,10 +24,12 @@ public class Sanity : MonoBehaviour
         float intensity = GetTotalLightIntensity(transform.position);
         if (intensity > 1)
             intensity = 1;
-        sanity -= (1-intensity) * (decreasePerMinute / 60f) * Time.deltaTime;
+        sanity -= (1-intensity) * (decreasePerMinute * GameManager.ghost.stats.sanityDrainModifier / 60f) * Time.deltaTime;
 
         if (GameManager.player.currentRoom == RoomManager.Instance.ghostRoom)
             sanity -= GameManager.ghost.stats.roomSanityDrain * Time.deltaTime;
+        if (GameManager.player.currentRoom == GameManager.ghost.currentRoom)
+            sanity -= GameManager.ghost.stats.proximitySanityDrain * Time.deltaTime;
 
         if (sanity < 0)
             sanity = 0;

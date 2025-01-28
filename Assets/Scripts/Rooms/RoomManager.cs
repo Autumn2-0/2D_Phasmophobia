@@ -21,6 +21,8 @@ public class RoomManager : MonoBehaviour
     public static float temperatureRecalculateTime = 30f;
     public static float temperatureVariation = 4f;
 
+    public GameObject door;
+
     private void Awake()
     {
         if (Instance == null)
@@ -55,7 +57,7 @@ public class RoomManager : MonoBehaviour
             {
                 if (ghostRoom == rooms[i])
                 {
-                    rooms[i].SetStartingTemperature(Random.Range(GameManager.ghost.stats.minRoomTemp, GameManager.ghost.stats.maxRoomTemp));
+                    rooms[i].SetStartingTemperature(Random.Range(GameManager.ghost.stats.freezingRoomTemp - 2, GameManager.ghost.stats.freezingRoomTemp + 2));
                 }
                 else
                 {
@@ -108,7 +110,10 @@ public class RoomManager : MonoBehaviour
             {
                 if (ghostRoom == room)
                 {
-                    room.SetTargetTemperature(Random.Range(GameManager.ghost.stats.minRoomTemp, GameManager.ghost.stats.maxRoomTemp));
+                    if (GameManager.ghost.stats.FreezingTemps)
+                        room.SetTargetTemperature(Random.Range(GameManager.ghost.stats.freezingRoomTemp - 2, GameManager.ghost.stats.freezingRoomTemp) + 2);
+                    else
+                        room.SetTargetTemperature(Random.Range(1f, 6f));
                 }
                 else
                 {
@@ -122,12 +127,52 @@ public class RoomManager : MonoBehaviour
         }
     }
 
+    public void UpdateTemperature(Room room)
+    {
+        //Initializing Temperatures
+        if (breakerOn)
+        {
+            if (ghostRoom == room)
+            {
+                if (GameManager.ghost.stats.FreezingTemps)
+                    room.SetTargetTemperature(Random.Range(GameManager.ghost.stats.freezingRoomTemp - 2, GameManager.ghost.stats.freezingRoomTemp) + 2);
+                else
+                    room.SetTargetTemperature(Random.Range(1f, 6f));
+            }
+            else
+            {
+                room.SetTargetTemperature(buildingTemperature);
+            }
+        }
+        else
+        {
+            room.SetTargetTemperature(outdoorTemperature);
+        }
+    }
+
     public void ChangeGhostRoom(Room room)
     {
         ghostRoom.isGhostRoom = false;
         ghostRoom = room;
         ghostRoom.isGhostRoom = true;
         UpdateTemperatures();
+    }
+
+    public void LockDoor()
+    {
+        door.SetActive(true);
+    }
+    public void UnlockDoor()
+    {
+        door.SetActive(false);
+    }
+
+    public void HuntLightsReset()
+    {
+        foreach (Room room in rooms)
+        {
+            room.BreakerFailure();
+        }
     }
 
 }

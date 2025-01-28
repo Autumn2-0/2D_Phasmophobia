@@ -21,8 +21,13 @@ public class GhostHunter : Item
             currentReading = 1;
             if (GameManager.ghost.activeGhostHunter)
                 currentReading = 2;
+            if (GameManager.ghost.stats.huntsWhenTracked)
+            {
+                GameManager.ghost.TriggerEarlyHunt();
+            }
+
         }
-        Debug.Log(currentReading);
+        if (inHand) Debug.Log(currentReading);
     }
 
     protected override void Interaction()

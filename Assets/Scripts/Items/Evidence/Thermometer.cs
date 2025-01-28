@@ -13,8 +13,8 @@ public class Thermometer : Item
     public float displayTemp;
     private float targetTemp = 20;
     float updateTime = 0f;
-    private float resetTime;
-    private float adjustSpeed = 0.075f;
+    public float resetTime = 0.75f;
+    public float adjustSpeed = 0.25f;
 
     protected override void StartItem()
     {
@@ -40,7 +40,7 @@ public class Thermometer : Item
         updateTime += Time.deltaTime;
         if (updateTime > resetTime && (!equipped || inHand))
         {
-            if (active)
+            if (active && inHand)
             {
                 //Inaccuracy
                 float rand = Random.Range(-1f, 1f);
@@ -50,7 +50,7 @@ public class Thermometer : Item
                 displayTemp *= 100; displayTemp = Mathf.RoundToInt(displayTemp); displayTemp /= 100;
 
                 //Eliminates False Positives
-                if (RoomManager.Instance.breakerOn && (!GameManager.ghost.GetComponent<Ghost>().stats.FreezingTemps || !currentRoom.isGhostRoom))
+                if (!RoomManager.Instance.breakerOn)
                 {
                     while (displayTemp <= 1)
                         displayTemp += Random.Range(0.01f, inaccuracyMax);

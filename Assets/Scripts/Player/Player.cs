@@ -97,6 +97,7 @@ public class Player : MonoBehaviour
         }
 
         detectableByElectronics = false;
+        /**
         foreach (var item in items)
         {
             Item current = item.GetComponent<Item>();
@@ -106,6 +107,7 @@ public class Player : MonoBehaviour
                     detectableByElectronics = true;
             }
         }
+        **/
         
     }
 
@@ -143,6 +145,8 @@ public class Player : MonoBehaviour
             currentRooms.Insert(0, collision.GetComponent<Room>());
             currentRoom = currentRooms[0];
         }
+
+        GameManager.ghost.Activate();
     }
 
     private void OnTriggerExit2D(Collider2D collision)

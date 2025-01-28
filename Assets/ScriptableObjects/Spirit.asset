@@ -32,15 +32,15 @@ MonoBehaviour:
   turnOffLights: 2
   breakLights: 4
   sabotageEquipment: 30
-  throwPickup: 80
+  throwPickup: 42
   trackable: 16
-  hallucination: 0
-  hunt: 0
-  passiveScratching: 0
-  huntingScratching: 0
-  footprints: 0
-  dots: 0
-  write: 100
+  hallucination: 9
+  hunt: 15
+  passiveScratching: 10
+  huntingScratching: 8
+  footprints: 14
+  dots: 15
+  write: 15
   ghostReach: 5
   reachThroughWalls: 0
   throwForceMin: 2
@@ -53,6 +53,8 @@ MonoBehaviour:
   dotsRequireCamera: 0
   orbsSpawnMin: 0.25
   orbsSpawnMax: 10
+  responseChance: 0.25
+  spiritBoxRangeMultiplier: 1
   highSanityScratching: 0
   huntingModelSwap: 0
   huntingVisibleChance: 0.5
@@ -60,10 +62,18 @@ MonoBehaviour:
   huntingSanity: 0
   blinkMinRate: 0.2
   blinkMaxRate: 0.4
+  roomSanityDrain: 0.083333336
   roamingSpeed: 3.5
   stopDistance: 1
   huntingSpeed: 7
   huntDuration: 60
   gracePeriod: 300
+  preHuntTimer: 4
   huntTimer: 60
   smudgeTimer: 30
+  ghostVisionRange: 30
+  trackingDuration: 2.5
+  electronicsDetectionRange: 15
+  electronicsBoostSpeed: 0
+  electronicsSpeedBoost: 1
+  electronicsBoostRange: 4

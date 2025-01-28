@@ -31,9 +31,9 @@ public class Breaker : Interactable
         return RoomManager.Instance.breakerOn;
     }
 
-    public void GhostInteraction(bool toggle)
+    public void GhostInteraction(bool onlyOff)
     {
-        if (toggle)
+        if (!onlyOff)
         {
             Toggle();
             InteractionMarking.Instantiate(gameObject, 3);

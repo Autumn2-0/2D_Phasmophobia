@@ -23,7 +23,6 @@ public class Room : MonoBehaviour
     public static float degreesPerSecond = 0.75f;
 
     public GameObject normalLights;
-    public GameObject eventLights;
     public Transform ghostSpawnLocation;
 
     private void Start()
@@ -117,8 +116,20 @@ public class Room : MonoBehaviour
 
     public void BreakLights()
     {
-        normalLights.GetComponentInChildren<Light2D>().intensity = 0.05f;
+        normalLights.GetComponentInChildren<Light2D>().intensity = 0.25f;
         powerUsage = 4;
+    }
+
+    public void EventLights(float duration = 2)
+    {
+        StartCoroutine(EventLightsIE(duration));
+    }
+
+    private IEnumerator EventLightsIE(float duration)
+    {
+        normalLights.GetComponentInChildren<Light2D>().color = Color.red;
+        yield return new WaitForSeconds(duration);
+        normalLights.GetComponentInChildren<Light2D>().color = Color.white;
     }
 
     public void BreakerUpdate()
@@ -150,5 +161,41 @@ public class Room : MonoBehaviour
             normalLights.SetActive(lightsOn);
         else
             normalLights.SetActive(false);
+    }
+
+    public Vector2 GetRandomPointInRoom()
+    {
+        PolygonCollider2D polygonCollider = gameObject.GetComponent<PolygonCollider2D>();
+        if (polygonCollider == null)
+        {
+            Debug.LogError("PolygonCollider2D reference is missing!");
+            return Vector2.zero;
+        }
+
+        // Get the bounds of the collider
+        Bounds bounds = polygonCollider.bounds;
+
+        // Try to find a random point within the polygon
+        for (int i = 0; i < 100; i++) // Limit attempts to prevent infinite loops
+        {
+            // Generate a random point within the bounds
+            float randomX = Random.Range(bounds.min.x, bounds.max.x);
+            float randomY = Random.Range(bounds.min.y, bounds.max.y);
+            Vector2 randomPoint = new Vector2(randomX, randomY);
+
+            // Check if the point is inside the polygon
+            if (polygonCollider.OverlapPoint(randomPoint))
+            {
+                return randomPoint; // Return the valid random point
+            }
+        }
+
+        return Vector2.zero; // Return a default value if no point was found
+    }
+
+    public bool PointInRoom(Vector2 point)
+    {
+        PolygonCollider2D polygonCollider = gameObject.GetComponent<PolygonCollider2D>();
+        return polygonCollider.OverlapPoint(point);
     }
 }

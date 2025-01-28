@@ -14,11 +14,21 @@ public enum GhostType
     Raiju
 }
 
+public enum GhostState
+{
+    Waiting,
+    Roaming,
+    Hunting
+}
+
 public class Ghost : MonoBehaviour
 {
     [Header("Basic Info")]
     public GhostType type;
     public GhostStats stats;
+    public GhostState state = GhostState.Waiting;
+    private bool GhostActive = false;
+    private Player player;
 
     [Header("Area")]
     private List<Room> currentRooms = new List<Room>();
@@ -32,7 +42,6 @@ public class Ghost : MonoBehaviour
     [Header("Roaming Movement")]
 
     [Header("Hunting Movement")]
-    public bool hunting = false;
     public bool detectsPlayer = true;
     public float huntCooldown = 300f;
     private bool ghostCanHunt = false;
@@ -65,6 +74,16 @@ public class Ghost : MonoBehaviour
         spriteID = Random.Range(0, GhostModels.Count());
         ghostModel.sprite = GhostModels[spriteID];
         ghostModel.enabled = false;
+        player = GameManager.player;
+    }
+
+    public void Activate()
+    {
+        if (!GhostActive)
+        {
+            GhostActive = true;
+            state = GhostState.Roaming;
+        }
     }
 
     private void CalculateActivityTotalOptions() //Calculates Total Weights of Current Ghost Activity Options
@@ -73,26 +92,25 @@ public class Ghost : MonoBehaviour
 
         activityOptions = 0;
         activityOptions += stats.toggleBreaker;
-        activityOptions += stats.disableBreaker;
         activityOptions += stats.toggleLights;
-        activityOptions += stats.turnOffLights;
         activityOptions += stats.breakLights;
+        activityOptions += stats.eventLights;
         activityOptions += stats.sabotageEquipment;
         activityOptions += stats.throwPickup;
         if (ghostCanHunt)
             activityOptions += stats.hunt;
         if (stats.Scratching && (ghostCanHunt || stats.highSanityScratching))
         {
-            if (hunting)
+            if (state == GhostState.Hunting)
                 activityOptions += stats.huntingScratching;
             else
                 activityOptions += stats.passiveScratching;
         }
         if (stats.UV)
             activityOptions += stats.footprints;
-        if (stats.Dots && !hunting)
+        if (stats.Dots && state != GhostState.Hunting)
             activityOptions += stats.dots;
-        if (stats.GhostWriting && !hunting)
+        if (stats.GhostWriting && state != GhostState.Hunting)
             activityOptions += stats.write;
         if (stats.GhostHunter9000)
             activityOptions += stats.trackable;
@@ -103,19 +121,30 @@ public class Ghost : MonoBehaviour
     private void GhostActivity()
     {
         bool triggerGhostActivity = false;
-        if (hunting)
+        if (state == GhostState.Hunting)
         {
             if (Random.value * 60f < stats.huntingAPM * Time.deltaTime)
             {
                 triggerGhostActivity = true;
             }
         }
-        else
+        else if (state == GhostState.Roaming)
         {
-            if (Random.value * 60f < stats.activityPerMinute * Time.deltaTime)
+            if (GameManager.ghost.stats.customActivityNearPlayer && currentRoom == player.currentRoom)
             {
-                triggerGhostActivity = true;
+                if (Random.value * 60f < stats.activityNearPlayer * Time.deltaTime)
+                {
+                    triggerGhostActivity = true;
+                }
             }
+            else
+            {
+                if (Random.value * 60f < stats.activityPerMinute * Time.deltaTime)
+                {
+                    triggerGhostActivity = true;
+                }
+            }
+            
         }
 
         if (triggerGhostActivity)
@@ -123,25 +152,25 @@ public class Ghost : MonoBehaviour
             CalculateActivityTotalOptions();
             activityValue = Random.Range(0, activityOptions);
             ConditionalAction(stats.toggleBreaker, ToggleBreaker);
-            ConditionalAction(stats.disableBreaker, DisableBreaker);
             ConditionalAction(stats.toggleLights, ToggleLights);
-            ConditionalAction(stats.turnOffLights, TurnOffLights);
             ConditionalAction(stats.breakLights, BreakLights);
+            ConditionalAction(stats.eventLights, EventLights);
             ConditionalAction(stats.sabotageEquipment, SabotageEquipment);
             ConditionalAction(stats.throwPickup, ThrowPickup);
-            ConditionalAction(stats.hunt, Hunt);
+            if (ghostCanHunt)
+                ConditionalAction(stats.hunt, Hunt);
             if (stats.Scratching && (ghostCanHunt || stats.highSanityScratching))
             {
-                if (hunting)
+                if (state == GhostState.Hunting)
                     ConditionalAction(stats.huntingScratching, Scratch);
                 else
                     ConditionalAction(stats.passiveScratching, Scratch);
             }
             if (stats.UV)
                 ConditionalAction(stats.footprints, Footprints);
-            if (stats.Dots && !hunting)
+            if (stats.Dots && state != GhostState.Hunting)
                 ConditionalAction(stats.dots, Dots);
-            if (stats.GhostWriting && !hunting)
+            if (stats.GhostWriting && state != GhostState.Hunting)
                 ConditionalAction(stats.write, Write);
             if (stats.GhostHunter9000)
                 ConditionalAction(stats.trackable, Trackable);
@@ -171,17 +200,18 @@ public class Ghost : MonoBehaviour
             huntCooldown -= Time.deltaTime;
         }
 
-        switch (hunting)
+        switch (state)
         {
-            case false:
+            case GhostState.Waiting:
+                break;
+            case GhostState.Roaming:
                 RoamingMovement();
                 break;
-            case true:
+            case GhostState.Hunting:
                 HuntingMovement();
                 break;
         }
     }
-
     public void RoamingMovement()
     {
 
@@ -204,20 +234,20 @@ public class Ghost : MonoBehaviour
         DetectingPlayer();
         
         //Need to Add Pathfinding. If boosted, hunting speed += stats.electronicsSpeedBoost
-        if (Vector2.Distance(transform.position, GameManager.player.transform.position) >= stats.stopDistance)
+        if (Vector2.Distance(transform.position, player.transform.position) >= stats.stopDistance)
         {
-            transform.position = Vector2.MoveTowards(transform.position, GameManager.player.transform.position, stats.huntingSpeed * Time.deltaTime);
+            transform.position = Vector2.MoveTowards(transform.position, player.transform.position, stats.huntingSpeed * Time.deltaTime);
         }
     }
 
     public void DetectingPlayer()
     {
-        if (GameManager.player.detectableByElectronics && Vector2.Distance(GameManager.player.transform.position, transform.position) < stats.electronicsDetectionRange)
+        if (player.detectableByElectronics && Vector2.Distance(player.transform.position, transform.position) < stats.electronicsDetectionRange)
         {
             detectsPlayer = true;
             lastSeenPlayerTime = Time.time;
         }
-        else if (StaticInteract.instance.CanReach(GameManager.player.transform.position, transform.position, stats.ghostVisionRange))
+        else if (StaticInteract.instance.CanReach(player.transform.position, transform.position, stats.ghostVisionRange))
         {
             detectsPlayer = true;
             lastSeenPlayerTime = Time.time;
@@ -234,6 +264,8 @@ public class Ghost : MonoBehaviour
         {
             currentRooms.Insert(0, collision.GetComponent<Room>());
             currentRoom = currentRooms[0];
+            if (stats.currentRoomFreezes)
+                currentRoom.SetTargetTemperature(stats.freezingRoomTemp);
         }
     }
 
@@ -241,9 +273,13 @@ public class Ghost : MonoBehaviour
     {
         if (collision.CompareTag("Room"))
         {
+            if (stats.currentRoomFreezes && !currentRoom.isGhostRoom)
+                RoomManager.Instance.UpdateTemperature(collision.GetComponent<Room>());
             currentRooms.Remove(collision.GetComponent<Room>());
             if (currentRooms.Count() > 0)
+            {
                 currentRoom = currentRooms[0];
+            }
             else currentRoom = null;
         }
     }
@@ -251,8 +287,13 @@ public class Ghost : MonoBehaviour
     public IEnumerator HuntSequence()
     {
         Debug.Log("Started Hunt");
+        state = GhostState.Waiting;
+        RoomManager.Instance.LockDoor();
+
+        yield return new WaitForSeconds(stats.preHuntTimer);
+
         ghostModel.enabled = true;
-        hunting = true;
+        state = GhostState.Hunting;
         smudged = false;
         CalculateActivityTotalOptions();
 
@@ -262,13 +303,13 @@ public class Ghost : MonoBehaviour
 
         //Change to Roaming behaviour
 
-        hunting = false;
+        state = GhostState.Roaming;
         CalculateActivityTotalOptions();
-        RoomManager.Instance.ghostRoom = currentRoom;
         huntCooldown = stats.huntTimer;
         if (smudged)
             huntCooldown += stats.smudgeTimer;
         ghostModel.enabled = false;
+        RoomManager.Instance.HuntLightsReset();
         Debug.Log("Finished Hunt");
     }
 
@@ -277,7 +318,7 @@ public class Ghost : MonoBehaviour
         float waitTime = Random.Range(stats.blinkMinRate, stats.blinkMaxRate);
         yield return new WaitForSeconds(waitTime);
 
-        while (hunting)
+        while (state == GhostState.Hunting)
         {
             if (ghostModel.enabled && 2 * Random.value < stats.visibilityToggleChance + (0.5f - stats.huntingVisibleChance))
             {
@@ -312,13 +353,8 @@ public class Ghost : MonoBehaviour
     //Ghost Activity Functions
     private void ToggleBreaker() 
     {
-        Breaker.Instance.GhostInteraction(true);
+        Breaker.Instance.GhostInteraction(GameManager.ghost.stats.onlyTurnBreakerOff);
         Debug.Log("The Ghost Toggled Breaker");
-    }
-    private void DisableBreaker()
-    {
-        Breaker.Instance.GhostInteraction(false);
-        Debug.Log("The Ghost Disabled Breaker");
     }
     private void ToggleLights()
     {
@@ -326,25 +362,14 @@ public class Ghost : MonoBehaviour
         if (options.Count > 0)
         {
             Switch choice = options[Random.Range(0, options.Count)];
-            choice.Toggle();
+            if (GameManager.ghost.stats.onlyTurnLightsOff)
+                choice.room.SetLightsActive(false);
+            else
+                choice.Toggle();
             choice.GhostInteraction(2);
             Debug.Log("The Ghost Toggled Lights");
         }
     }
-    private void TurnOffLights()
-    {
-        List<Switch> options = FindInteractionOptions(Interactable.lights);
-        if (options.Count > 0)
-        {
-            Switch choice = options[Random.Range(0, options.Count)];
-            if (choice.isLightsOn())
-            {
-                choice.Toggle();
-                choice.GhostInteraction(3);
-                Debug.Log("The Ghost Turned Off Lights");
-            }
-        }
-    } 
     private void BreakLights()
     {
         List<Switch> options = FindInteractionOptions(Interactable.lights);
@@ -354,6 +379,17 @@ public class Ghost : MonoBehaviour
             choice.room.BreakLights();
             choice.GhostInteraction(4);
             Debug.Log("The Ghost Broke Lights");
+        }
+    }
+    private void EventLights()
+    {
+        List<Switch> options = FindInteractionOptions(Interactable.lights);
+        if (options.Count > 0)
+        {
+            Switch choice = options[Random.Range(0, options.Count)];
+            choice.room.EventLights();
+            choice.GhostInteraction(3);
+            Debug.Log("Ghost Event");
         }
     }
     private void SabotageEquipment()
@@ -382,12 +418,29 @@ public class Ghost : MonoBehaviour
     }
     private void Hunt()
     {
-        if (!hunting && huntCooldown <= 0)
+        if (state != GhostState.Hunting && huntCooldown <= 0 && player.currentRoom != null)
         {
+            //Hunt Blocked
+            foreach (Crucifix crucifix in Interactable.crucifixs)
+            {
+                if (crucifix.uses > 0 && StaticInteract.instance.CanReach(transform.position, crucifix.transform.position, crucifix.range, crucifix.throughWalls || stats.reachThroughWalls))
+                {
+                    crucifix.uses--;
+                    return;
+                }
+            }
+
+            //Not Blocked
             StartCoroutine(HuntSequence());
             StartCoroutine(HuntBlinking());
         }
         Debug.Log("The Ghost is Hunting");
+    }
+
+    public void TriggerEarlyHunt()
+    {
+        huntCooldown = -1;
+        Hunt();
     }
     private void Scratch()
     {
@@ -398,12 +451,12 @@ public class Ghost : MonoBehaviour
     {
         if (stepsRemainingUV == 0)
         {
-            stepsRemainingUV += stats.numberOfFootprints;
+            stepsRemainingUV += 3 + stats.numberOfFootprints;
             StartCoroutine(UV());
         }
         else
         {
-            stepsRemainingUV += stats.numberOfFootprints;
+            stepsRemainingUV += 3 + stats.numberOfFootprints;
         }
         Debug.Log("The Ghost is leaving Footprints");
     }
@@ -436,7 +489,7 @@ public class Ghost : MonoBehaviour
     {
         float elapsedTime = 0f;
 
-        while (elapsedTime < stats.dotsLength && !hunting)
+        while (elapsedTime < stats.dotsLength && state != GhostState.Hunting)
         {
             elapsedTime += Time.deltaTime;
             yield return null;

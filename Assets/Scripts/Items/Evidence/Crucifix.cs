@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Crucifix : Item
 {
+    public float range = 5f;
+    public bool throughWalls = false;
     protected override void StartItem()
     {
 
@@ -21,6 +23,10 @@ public class Crucifix : Item
 
     protected override void Interaction()
     {
-
+        if (active)
+        {
+            active = false;
+            uses++;
+        }
     }
 }

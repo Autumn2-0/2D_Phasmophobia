@@ -39,32 +39,7 @@ public class GhostOrbs : Item
 
     public static Vector2 GetRandomPointInGhostRoom()
     {
-        PolygonCollider2D polygonCollider = RoomManager.Instance.ghostRoom.GetComponent<PolygonCollider2D>();
-        if (polygonCollider == null)
-        {
-            Debug.LogError("PolygonCollider2D reference is missing!");
-            return Vector2.zero;
-        }
-
-        // Get the bounds of the collider
-        Bounds bounds = polygonCollider.bounds;
-
-        // Try to find a random point within the polygon
-        for (int i = 0; i < 100; i++) // Limit attempts to prevent infinite loops
-        {
-            // Generate a random point within the bounds
-            float randomX = Random.Range(bounds.min.x, bounds.max.x);
-            float randomY = Random.Range(bounds.min.y, bounds.max.y);
-            Vector2 randomPoint = new Vector2(randomX, randomY);
-
-            // Check if the point is inside the polygon
-            if (polygonCollider.OverlapPoint(randomPoint))
-            {
-                return randomPoint; // Return the valid random point
-            }
-        }
-
-        return Vector2.zero; // Return a default value if no point was found
+        return RoomManager.Instance.ghostRoom.GetRandomPointInRoom();
     }
 
     public override int GhostInteraction(bool itemSpecific)
