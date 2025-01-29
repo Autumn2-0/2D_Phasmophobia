@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 371d7016c83930e4bb1c4af3beafebe9, type: 3}
-  m_Name: Myling
+  m_Name: Deogen
   m_EditorClassIdentifier: 
-  type: 2
+  type: 3
   FreezingTemps: 0
   freezingRoomTemp: -2
   EMF: 0

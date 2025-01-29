@@ -13,67 +13,91 @@ MonoBehaviour:
   m_Name: Spirit
   m_EditorClassIdentifier: 
   type: 0
-  FreezingTemps: 1
-  EMF: 1
-  UV: 1
-  Dots: 1
-  SpiritBox: 1
-  GhostOrbs: 1
-  GhostWriting: 1
-  MS: 1
-  Scratching: 1
-  Hallucinations: 1
-  GhostHunter9000: 1
-  activityPerMinute: 32
-  huntingAPM: 20
-  toggleBreaker: 3
-  disableBreaker: 1
-  toggleLights: 6
-  turnOffLights: 2
-  breakLights: 4
-  sabotageEquipment: 30
-  throwPickup: 42
-  trackable: 16
-  hallucination: 9
-  hunt: 15
-  passiveScratching: 10
-  huntingScratching: 8
-  footprints: 14
-  dots: 15
-  write: 15
-  ghostReach: 5
-  reachThroughWalls: 0
-  throwForceMin: 2
-  throwForceMax: 4
-  minRoomTemp: -4
-  maxRoomTemp: 0
-  numberOfFootprints: 3
+  FreezingTemps: 0
+  freezingRoomTemp: -2
+  EMF: 0
   chanceOfEMF: 0.2
+  UV: 0
+  footprints: 14
+  Dots: 0
+  dots: 15
   dotsLength: 8
-  dotsRequireCamera: 0
-  orbsSpawnMin: 0.25
-  orbsSpawnMax: 10
+  SpiritBox: 0
   responseChance: 0.25
   spiritBoxRangeMultiplier: 1
+  GhostOrbs: 0
+  orbsSpawnMin: 0.25
+  orbsSpawnMax: 20
+  GhostWriting: 0
+  write: 15
+  MotionSensor: 0
+  Salt: 0
+  Scratching: 0
   highSanityScratching: 0
-  huntingModelSwap: 0
-  huntingVisibleChance: 0.5
-  visibilityToggleChance: 0.5
+  passiveScratching: 10
+  huntingScratching: 8
+  Hallucinations: 0
+  GhostHunter9000: 0
+  trackable: 16
+  OverrideSmudgeStick: 0
+  smudgeTimer: 30
+  smudgeSpeed: 30
+  activityPerMinute: 15
+  activityNearPlayer: 15
+  huntingAPM: 20
+  toggleBreaker: 2
+  toggleLights: 6
+  breakLights: 4
+  eventLights: 3
+  sabotageEquipment: 30
+  throwPickup: 42
+  hallucination: 9
+  hunt: 15
+  ghostReach: 5
+  throwForceMin: 2
+  throwForceMax: 4
   huntingSanity: 0
   blinkMinRate: 0.2
   blinkMaxRate: 0.4
-  roomSanityDrain: 0.083333336
-  roamingSpeed: 3.5
-  stopDistance: 1
-  huntingSpeed: 7
-  huntDuration: 60
-  gracePeriod: 300
-  preHuntTimer: 4
-  huntTimer: 60
-  smudgeTimer: 30
-  ghostVisionRange: 30
-  trackingDuration: 2.5
+  modifyNumberOfFootprits: 0
+  numberOfFootprints: 3
+  adjustVisibility: 0
+  huntingVisibleChance: 0.5
+  visibilityToggleChance: 0.5
+  huntingModelSwap: 0
+  dotsRequireCamera: 0
+  alwaysTracksPlayer: 0
+  speedRelativeToDistance: 0
+  ghostModifiedDetectionRange: 0
   electronicsDetectionRange: 15
   electronicsBoostSpeed: 0
   electronicsSpeedBoost: 1
   electronicsBoostRange: 4
+  onlyTurnLightsOff: 0
+  onlyTurnBreakerOff: 0
+  huntStartsOnPlayer: 0
+  temperaturesBoostSpeed: 0
+  temperatureSpeedBoost: 1
+  temperatureBoostThreshold: 4
+  customActivityNearPlayer: 0
+  currentRoomFreezes: 0
+  huntsWhenTracked: 0
+  reachThroughWalls: 0
+  additionalSanityDrain: 0
+  sanityDrainModifier: 1
+  roomSanityDrain: 0.083333336
+  proximitySanityDrain: 0.083333336
+  roamingSpeed: 3.5
+  roamingRange: 3.5
+  returnToRoom: 0.4
+  replaceRoom: 0.2
+  stopDistance: 1
+  huntingSpeed: 7
+  huntingMaxSpeed: 8
+  huntSpeedUpTime: 0
+  huntDuration: 60
+  gracePeriod: 300
+  preHuntTimer: 4
+  huntTimer: 60
+  ghostVisionRange: 30
+  trackingDuration: 2.5

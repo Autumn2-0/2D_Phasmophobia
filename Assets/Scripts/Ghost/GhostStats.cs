@@ -87,7 +87,10 @@ public class GhostStats : ScriptableObject
 
     //Settings - Smudge Stick
     [Header("Settings - Smudge Stick")]
+    public bool OverrideSmudgeStick = false;
+    [ShowIf("OverrideSmudgeStick")]
     public float smudgeTimer = 30;
+    [ShowIf("OverrideSmudgeStick")]
     public float smudgeSpeed = 30;
 
     //Settings - Ghost Activity
