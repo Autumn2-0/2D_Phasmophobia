@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class Grid : MonoBehaviour
 {
-    public Grid instance;
+    public static Grid instance;
 
     public bool displayGridGizmos;
     public LayerMask unwalkableMask;
@@ -43,6 +43,12 @@ public class Grid : MonoBehaviour
     public void SetWallPenalty(int input)
     {
         walkableRegions[0].terrainPenalty = input;
+        walkableRegionsDictionary.Clear();
+        foreach (TerrainType region in walkableRegions)
+        {
+            walkableMask.value |= region.terrainMask.value;
+            walkableRegionsDictionary.Add((int)Mathf.Log(region.terrainMask.value, 2), region.terrainPenalty);
+        }
     }
     public void GhostCanFade()
     {
@@ -89,7 +95,7 @@ public class Grid : MonoBehaviour
             }
         }
         grid = tempGrid;
-        BlurPenaltyMap(5);
+        BlurPenaltyMap(3);
 
     }
 

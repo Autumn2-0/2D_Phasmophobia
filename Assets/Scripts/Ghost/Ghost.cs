@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.Rendering.Universal;
 using UnityEngine;
-using static UnityEditor.Progress;
 
 public enum GhostType
 {
@@ -29,6 +28,7 @@ public class Ghost : MonoBehaviour
     public GhostState state = GhostState.Waiting;
     private bool GhostActive = false;
     private Player player;
+    private Unit unit;
 
     [Header("Area")]
     private List<Room> currentRooms = new List<Room>();
@@ -47,6 +47,7 @@ public class Ghost : MonoBehaviour
     private bool ghostCanHunt = false;
     private bool smudged = false;
     private float lastSeenPlayerTime;
+    private float stoppingDistance = 0.15f;
 
     public GhostStats[] possibleStats;
     public bool activeDots = false;
@@ -75,6 +76,13 @@ public class Ghost : MonoBehaviour
         ghostModel.sprite = GhostModels[spriteID];
         ghostModel.enabled = false;
         player = GameManager.player;
+        unit = GetComponent<Unit>();
+
+        if (stats.canPhase)
+        {
+            Grid.instance.SetWallPenalty(stats.phasingPenalty);
+            Grid.instance.GhostCanFade();
+        }
     }
 
     public void Activate()
@@ -203,6 +211,7 @@ public class Ghost : MonoBehaviour
         switch (state)
         {
             case GhostState.Waiting:
+                unit.speed = 0.01f;
                 break;
             case GhostState.Roaming:
                 RoamingMovement();
@@ -214,7 +223,30 @@ public class Ghost : MonoBehaviour
     }
     public void RoamingMovement()
     {
-
+        if (unit.ReachedDestination(stoppingDistance))
+        {
+            if (Random.value < stats.replaceRoom)
+            {
+                RoomManager.Instance.ChangeGhostRoom(currentRoom);
+            }
+            if (Random.value < stats.returnToRoom)
+            {
+                SetTarget(RoomManager.Instance.ghostRoom.GetRandomPointInRoom());
+            }
+            else
+            {
+                while (true)
+                {
+                    Vector2 newPos = (Vector2)transform.position + Random.insideUnitCircle * stats.roamingRange;
+                    if (RoomManager.Instance.IsPointInRoom(newPos))
+                    {
+                        SetTarget(newPos);
+                        break;
+                    }
+                }
+            }
+        }
+        unit.speed = stats.defaultSpeed - unit.GetMovementPenalty() * (stats.defaultSpeed - stats.phasingSpeed)/stats.phasingPenalty;
     }
 
     public void HuntingMovement()
@@ -234,10 +266,21 @@ public class Ghost : MonoBehaviour
         DetectingPlayer();
         
         //Need to Add Pathfinding. If boosted, hunting speed += stats.electronicsSpeedBoost
-        if (Vector2.Distance(transform.position, player.transform.position) >= stats.stopDistance)
+        if (Vector2.Distance(transform.position, player.transform.position) >= stoppingDistance)
         {
-            transform.position = Vector2.MoveTowards(transform.position, player.transform.position, stats.huntingSpeed * Time.deltaTime);
+            transform.position = Vector2.MoveTowards(transform.position, player.transform.position, stats.chasingSpeed * Time.deltaTime);
         }
+    }
+
+    public void SetTarget(Vector2 pos)
+    {
+        unit.target.transform.SetParent(null);
+        unit.target.transform.position = pos;
+    }
+    public void ChaseTarget()
+    {
+        unit.target.transform.SetParent(player.transform);
+        unit.target.transform.localPosition = Vector2.zero;
     }
 
     public void DetectingPlayer()
@@ -255,32 +298,6 @@ public class Ghost : MonoBehaviour
         if (lastSeenPlayerTime + stats.trackingDuration < Time.time)
         {
             detectsPlayer = false;
-        }
-    }
-
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.CompareTag("Room"))
-        {
-            currentRooms.Insert(0, collision.GetComponent<Room>());
-            currentRoom = currentRooms[0];
-            if (stats.currentRoomFreezes)
-                currentRoom.SetTargetTemperature(stats.freezingRoomTemp);
-        }
-    }
-
-    private void OnTriggerExit2D(Collider2D collision)
-    {
-        if (collision.CompareTag("Room"))
-        {
-            if (stats.currentRoomFreezes && !currentRoom.isGhostRoom)
-                RoomManager.Instance.UpdateTemperature(collision.GetComponent<Room>());
-            currentRooms.Remove(collision.GetComponent<Room>());
-            if (currentRooms.Count() > 0)
-            {
-                currentRoom = currentRooms[0];
-            }
-            else currentRoom = null;
         }
     }
 
@@ -305,7 +322,7 @@ public class Ghost : MonoBehaviour
 
         state = GhostState.Roaming;
         CalculateActivityTotalOptions();
-        huntCooldown = stats.huntTimer;
+        huntCooldown = stats.huntCooldown;
         if (smudged)
             huntCooldown += stats.smudgeTimer;
         ghostModel.enabled = false;
@@ -528,5 +545,31 @@ public class Ghost : MonoBehaviour
     private void Hallucination()
     {
         Debug.Log("The Ghost is Haunting You");
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Room"))
+        {
+            currentRooms.Insert(0, collision.GetComponent<Room>());
+            currentRoom = currentRooms[0];
+            if (stats.currentRoomFreezes)
+                currentRoom.SetTargetTemperature(stats.freezingRoomTemp);
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Room"))
+        {
+            if (stats.currentRoomFreezes && !currentRoom.isGhostRoom)
+                RoomManager.Instance.UpdateTemperature(collision.GetComponent<Room>());
+            currentRooms.Remove(collision.GetComponent<Room>());
+            if (currentRooms.Count() > 0)
+            {
+                currentRoom = currentRooms[0];
+            }
+            else currentRoom = null;
+        }
     }
 }

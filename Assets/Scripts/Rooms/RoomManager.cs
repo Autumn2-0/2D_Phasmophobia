@@ -35,6 +35,16 @@ public class RoomManager : MonoBehaviour
         }
     }
 
+    public bool IsPointInRoom(Vector2 point)
+    {
+        foreach (Room room in rooms)
+        {
+            if (room.PointInRoom(point))
+                return true;
+        }
+        return false;
+    }
+
     public void Start() //Initialize Rooms
     {
         breakerOn = !breakerStartsOn;
@@ -50,6 +60,7 @@ public class RoomManager : MonoBehaviour
                 ghostRoom = rooms[i];
                 ghostRoom.isGhostRoom = true;
                 GameManager.ghost.gameObject.transform.position = ghostRoom.ghostSpawnLocation.position;
+                GameManager.ghost.SetTarget((Vector2)ghostRoom.ghostSpawnLocation.position + Vector2.up);
             }
 
             //Initializing Temperatures

@@ -176,25 +176,36 @@ public class GhostStats : ScriptableObject
     [ShowIf("GhostHunter9000"), Range(0f, 1f)]
     public float proximitySanityDrain = 0f;
 
+    //Settings - Ghost Movement
+    [Header("Settings - Ghost Movement")]
+    public bool canPhase = false;
+    [ShowIf("canPhase")]
+    public float phasingSpeed = 1f;
+    [ShowIf("canPhase")]
+    public int phasingPenalty = 25;
+    public float defaultSpeed = 7f;
+    public bool canSpeedUp = false;
+    [ShowIf("canSpeedUp")]
+    public float chasingSpeed = 8f;
+    [ShowIf("canSpeedUp")]
+    public float speedUpTime = 2f;
+
+
     //Settings - Roaming
     [Header("Settings - Roaming")]
-    public float roamingSpeed = 3.5f;
     public float roamingRange = 3.5f;
     public float returnToRoom = 0.4f;
-    public float replaceRoom = 0.2f;
+    [Range(0f, 1f)]
+    public float replaceRoom = 0.05f;
     
     //Settings - Hunting
     [Header("Settings - Hunting")]
-    public float stopDistance = 1f;
-    public float huntingSpeed = 7f;
-    public float huntingMaxSpeed = 8f;
-    public float huntSpeedUpTime = 3f;
-    public float huntDuration = 60; //Length of hunt
-    public float gracePeriod = 300; //How long until first hunt
+    public float gracePeriod = 300;
     public float preHuntTimer = 4;
-    public float huntTimer = 60; //Time between hunts
-    public float ghostVisionRange = 30; //How far until ghost can see you in a hunt
-    public float trackingDuration = 2.5f; //How long after being seen until ghost forgets your location
+    public float huntDuration = 60;
+    public float huntCooldown = 60;
+    public float ghostVisionRange = 30;
+    public float trackingDuration = 2.5f;
 
     
 }

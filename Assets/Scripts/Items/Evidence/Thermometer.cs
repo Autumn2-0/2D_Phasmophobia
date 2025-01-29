@@ -50,7 +50,7 @@ public class Thermometer : Item
                 displayTemp *= 100; displayTemp = Mathf.RoundToInt(displayTemp); displayTemp /= 100;
 
                 //Eliminates False Positives
-                if (!RoomManager.Instance.breakerOn || currentRoom != RoomManager.Instance.ghostRoom || !GameManager.ghost.stats.FreezingTemps)
+                if (!RoomManager.Instance.breakerOn || currentRoom.targetTemperature > 1 || !GameManager.ghost.stats.FreezingTemps)
                 {
                     while (displayTemp <= 1)
                         displayTemp += Random.Range(0.01f, inaccuracyMax);

@@ -3,26 +3,39 @@ using System.Collections;
 
 public class Unit : MonoBehaviour
 {
-
-
     public Transform target;
     public float speed = 20;
     Vector2[] path;
     int targetIndex;
+    
 
     void Start()
     {
         PathRequestManager.RequestPath(transform.position, target.position, OnPathFound);
     }
 
+    public int GetMovementPenalty()
+    {
+        return Grid.instance.NodeFromWorldPoint(transform.position).movementPenalty;
+    }
+
+    public bool ReachedDestination(float stoppingDistance)
+    {
+        return Vector2.Distance(transform.position, target.transform.position) < stoppingDistance;
+    }
+
     public void OnPathFound(Vector2[] newPath, bool pathSuccessful)
     {
-        if (pathSuccessful)
+        if (pathSuccessful && newPath != null)
         {
             path = newPath;
             targetIndex = 0;
             StopCoroutine("FollowPath");
             StartCoroutine("FollowPath");
+        }
+        else
+        {
+            Debug.Log("No Path");
         }
         PathRequestManager.RequestPath(transform.position, target.position, OnPathFound);
     }
