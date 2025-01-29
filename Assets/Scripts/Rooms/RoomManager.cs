@@ -163,10 +163,13 @@ public class RoomManager : MonoBehaviour
 
     public void ChangeGhostRoom(Room room)
     {
-        ghostRoom.isGhostRoom = false;
-        ghostRoom = room;
-        ghostRoom.isGhostRoom = true;
-        UpdateTemperatures();
+        if (room != null)
+        {
+            ghostRoom.isGhostRoom = false;
+            ghostRoom = room;
+            ghostRoom.isGhostRoom = true;
+            UpdateTemperatures();
+        }
     }
 
     public void LockDoor()

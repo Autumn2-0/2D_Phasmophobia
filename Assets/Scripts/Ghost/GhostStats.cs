@@ -179,14 +179,15 @@ public class GhostStats : ScriptableObject
     //Settings - Ghost Movement
     [Header("Settings - Ghost Movement")]
     public bool canPhase = false;
-    [ShowIf("canPhase")]
-    public float phasingSpeed = 1f;
+    [ShowIf("canPhase"), Range(0f,2f)]
+    public float phasingSpeed = 0.3f;
     [ShowIf("canPhase")]
     public int phasingPenalty = 25;
-    public float defaultSpeed = 7f;
+    [Range(0f, 2f)]
+    public float defaultSpeed = 2.5f;
     public bool canSpeedUp = false;
-    [ShowIf("canSpeedUp")]
-    public float chasingSpeed = 8f;
+    [ShowIf("canSpeedUp"), Range(0f, 2f)]
+    public float chasingSpeed = 3f;
     [ShowIf("canSpeedUp")]
     public float speedUpTime = 2f;
 

@@ -31,28 +31,17 @@ public class Grid : MonoBehaviour
         gridSizeX = Mathf.RoundToInt(gridWorldSize.x / nodeDiameter);
         gridSizeY = Mathf.RoundToInt(gridWorldSize.y / nodeDiameter);
 
+        if (GameManager.ghost.stats.canPhase)
+        {
+            walkableRegions[0].terrainPenalty = GameManager.ghost.stats.phasingPenalty;
+            unwalkableMask = unwalkableFadeMask;
+        }
         foreach (TerrainType region in walkableRegions)
         {
             walkableMask.value |= region.terrainMask.value;
             walkableRegionsDictionary.Add((int)Mathf.Log(region.terrainMask.value, 2), region.terrainPenalty);
         }
 
-        CreateGrid();
-    }
-
-    public void SetWallPenalty(int input)
-    {
-        walkableRegions[0].terrainPenalty = input;
-        walkableRegionsDictionary.Clear();
-        foreach (TerrainType region in walkableRegions)
-        {
-            walkableMask.value |= region.terrainMask.value;
-            walkableRegionsDictionary.Add((int)Mathf.Log(region.terrainMask.value, 2), region.terrainPenalty);
-        }
-    }
-    public void GhostCanFade()
-    {
-        unwalkableMask = unwalkableFadeMask;
         CreateGrid();
     }
 

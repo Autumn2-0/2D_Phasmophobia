@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 371d7016c83930e4bb1c4af3beafebe9, type: 3}
   m_Name: Deogen
   m_EditorClassIdentifier: 
-  type: 3
+  type: 0
   FreezingTemps: 0
   freezingRoomTemp: -2
   EMF: 0
@@ -87,17 +87,19 @@ MonoBehaviour:
   sanityDrainModifier: 1
   roomSanityDrain: 0.083333336
   proximitySanityDrain: 0.083333336
-  roamingSpeed: 3.5
-  roamingRange: 3.5
-  returnToRoom: 0.4
-  replaceRoom: 0.2
-  stopDistance: 1
-  huntingSpeed: 7
-  huntingMaxSpeed: 8
-  huntSpeedUpTime: 0
-  huntDuration: 60
+  canPhase: 0
+  phasingSpeed: 0.1
+  phasingPenalty: 25
+  defaultSpeed: 1
+  canSpeedUp: 0
+  chasingSpeed: 8
+  speedUpTime: 2
+  roamingRange: 6
+  returnToRoom: 0.2
+  replaceRoom: 0.15
   gracePeriod: 300
   preHuntTimer: 4
-  huntTimer: 60
+  huntDuration: 60
+  huntCooldown: 60
   ghostVisionRange: 30
   trackingDuration: 2.5

@@ -47,7 +47,7 @@ public class Ghost : MonoBehaviour
     private bool ghostCanHunt = false;
     private bool smudged = false;
     private float lastSeenPlayerTime;
-    private float stoppingDistance = 0.15f;
+    private float stoppingDistance = 0.4f;
 
     public GhostStats[] possibleStats;
     public bool activeDots = false;
@@ -62,6 +62,7 @@ public class Ghost : MonoBehaviour
     //Spawning
     public GameObject footprintsPrefab;
     public GameObject scratchesPrefab;
+    public bool noPath = false;
 
     private void Awake()
     {
@@ -77,12 +78,6 @@ public class Ghost : MonoBehaviour
         ghostModel.enabled = false;
         player = GameManager.player;
         unit = GetComponent<Unit>();
-
-        if (stats.canPhase)
-        {
-            Grid.instance.SetWallPenalty(stats.phasingPenalty);
-            Grid.instance.GhostCanFade();
-        }
     }
 
     public void Activate()
@@ -223,13 +218,13 @@ public class Ghost : MonoBehaviour
     }
     public void RoamingMovement()
     {
-        if (unit.ReachedDestination(stoppingDistance))
+        if (unit.ReachedDestination(stoppingDistance) || noPath)
         {
-            if (Random.value < stats.replaceRoom)
+            if (Random.Range(0f, 1f) < stats.replaceRoom && !noPath)
             {
                 RoomManager.Instance.ChangeGhostRoom(currentRoom);
             }
-            if (Random.value < stats.returnToRoom)
+            if (Random.Range(0f,1f) < stats.returnToRoom && !noPath)
             {
                 SetTarget(RoomManager.Instance.ghostRoom.GetRandomPointInRoom());
             }
@@ -244,6 +239,7 @@ public class Ghost : MonoBehaviour
                         break;
                     }
                 }
+                noPath = false;
             }
         }
         unit.speed = stats.defaultSpeed - unit.GetMovementPenalty() * (stats.defaultSpeed - stats.phasingSpeed)/stats.phasingPenalty;

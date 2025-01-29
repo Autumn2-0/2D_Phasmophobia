@@ -35,7 +35,7 @@ public class Unit : MonoBehaviour
         }
         else
         {
-            Debug.Log("No Path");
+            GameManager.ghost.noPath = true;
         }
         PathRequestManager.RequestPath(transform.position, target.position, OnPathFound);
     }
