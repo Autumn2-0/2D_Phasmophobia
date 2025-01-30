@@ -37,7 +37,7 @@ public class Sanity : MonoBehaviour
             sanity = 100;
     }
 
-    private float GetTotalLightIntensity(Vector2 point)
+    public float GetTotalLightIntensity(Vector2 point)
     {
         float totalIntensity = 0f;
 

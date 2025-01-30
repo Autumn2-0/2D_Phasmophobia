@@ -7,11 +7,13 @@ public class Unit : MonoBehaviour
     public float speed = 20;
     Vector2[] path;
     int targetIndex;
+    private Rigidbody2D rb;
     
 
     void Start()
     {
         PathRequestManager.RequestPath(transform.position, target.position, OnPathFound);
+        rb = GetComponent<Rigidbody2D>();
     }
 
     public int GetMovementPenalty()
@@ -56,7 +58,8 @@ public class Unit : MonoBehaviour
                 currentWaypoint = path[targetIndex];
             }
 
-            transform.position = Vector2.MoveTowards(transform.position, currentWaypoint, speed * Time.deltaTime);
+            //transform.position = Vector2.MoveTowards(transform.position, currentWaypoint, speed * Time.deltaTime);
+            rb.velocity = (currentWaypoint - (Vector2)transform.position).normalized * speed;
             yield return null;
 
         }

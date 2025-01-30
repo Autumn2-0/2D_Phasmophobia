@@ -165,8 +165,7 @@ public class Room : MonoBehaviour
 
     public Vector2 GetRandomPointInRoom()
     {
-        PolygonCollider2D polygonCollider = gameObject.GetComponent<PolygonCollider2D>();
-        if (polygonCollider == null)
+        if (!gameObject.TryGetComponent<PolygonCollider2D>(out var polygonCollider))
         {
             Debug.LogError("PolygonCollider2D reference is missing!");
             return Vector2.zero;
@@ -181,7 +180,7 @@ public class Room : MonoBehaviour
             // Generate a random point within the bounds
             float randomX = Random.Range(bounds.min.x, bounds.max.x);
             float randomY = Random.Range(bounds.min.y, bounds.max.y);
-            Vector2 randomPoint = new Vector2(randomX, randomY);
+            Vector2 randomPoint = new(randomX, randomY);
 
             // Check if the point is inside the polygon
             if (polygonCollider.OverlapPoint(randomPoint))

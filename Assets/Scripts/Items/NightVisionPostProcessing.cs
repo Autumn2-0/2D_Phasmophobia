@@ -17,6 +17,7 @@ public class NightVisionPostProcessing : MonoBehaviour
             Instance = this;
         else
             Destroy(gameObject);
+        SetVolume(false);
     }
 
     public void SetVolume(bool NVinUse)

@@ -13,7 +13,7 @@ public class Grid : MonoBehaviour
     public float nodeRadius;
     public TerrainType[] walkableRegions;
     public int obstacleProximityPenalty = 10;
-    Dictionary<int, int> walkableRegionsDictionary = new Dictionary<int, int>();
+    Dictionary<int, int> walkableRegionsDictionary = new();
     LayerMask walkableMask;
 
     Node[,] grid;
@@ -33,7 +33,8 @@ public class Grid : MonoBehaviour
 
         if (GameManager.ghost.stats.canPhase)
         {
-            walkableRegions[0].terrainPenalty = GameManager.ghost.stats.phasingPenalty;
+            walkableRegions[0].terrainPenalty = GameManager.ghost.stats.phasingPenalty; //Walls
+            walkableRegions[1].terrainPenalty = GameManager.ghost.stats.phasingPenalty; //Props
             unwalkableMask = unwalkableFadeMask;
         }
         foreach (TerrainType region in walkableRegions)
@@ -148,7 +149,7 @@ public class Grid : MonoBehaviour
 
     public List<Node> GetNeighbours(Node node)
     {
-        List<Node> neighbours = new List<Node>();
+        List<Node> neighbours = new();
 
         for (int x = -1; x <= 1; x++)
         {

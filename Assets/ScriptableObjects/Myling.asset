@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: Myling
   m_EditorClassIdentifier: 
   type: 0
-  FreezingTemps: 0
+  FreezingTemps: 1
   freezingRoomTemp: -2
-  EMF: 0
+  EMF: 1
   chanceOfEMF: 0.2
-  UV: 0
+  UV: 1
   footprints: 14
   Dots: 0
   dots: 15
@@ -28,7 +28,7 @@ MonoBehaviour:
   GhostOrbs: 0
   orbsSpawnMin: 0.25
   orbsSpawnMax: 20
-  GhostWriting: 0
+  GhostWriting: 1
   write: 15
   MotionSensor: 0
   Salt: 0
@@ -42,17 +42,17 @@ MonoBehaviour:
   OverrideSmudgeStick: 0
   smudgeTimer: 30
   smudgeSpeed: 30
-  activityPerMinute: 15
+  activityPerMinute: 8
   activityNearPlayer: 15
-  huntingAPM: 20
-  toggleBreaker: 2
-  toggleLights: 6
-  breakLights: 4
-  eventLights: 3
-  sabotageEquipment: 30
-  throwPickup: 42
-  hallucination: 9
-  hunt: 15
+  huntingAPM: 12
+  toggleBreaker: 3
+  toggleLights: 9
+  breakLights: 1
+  eventLights: 2
+  sabotageEquipment: 20
+  throwPickup: 45
+  hallucination: 10
+  hunt: 10
   ghostReach: 5
   throwForceMin: 2
   throwForceMax: 4
@@ -65,6 +65,7 @@ MonoBehaviour:
   huntingVisibleChance: 0.5
   visibilityToggleChance: 0.5
   huntingModelSwap: 0
+  huntingModelSwapChance: 0.2
   dotsRequireCamera: 0
   alwaysTracksPlayer: 0
   speedRelativeToDistance: 0
@@ -87,7 +88,7 @@ MonoBehaviour:
   sanityDrainModifier: 1
   roomSanityDrain: 0.083333336
   proximitySanityDrain: 0.083333336
-  canPhase: 0
+  canPhase: 1
   phasingSpeed: 0.1
   phasingPenalty: 25
   defaultSpeed: 1
@@ -96,7 +97,7 @@ MonoBehaviour:
   speedUpTime: 2
   roamingRange: 6
   returnToRoom: 0.2
-  replaceRoom: 0.15
+  replaceRoom: 0.025
   gracePeriod: 300
   preHuntTimer: 4
   huntDuration: 60

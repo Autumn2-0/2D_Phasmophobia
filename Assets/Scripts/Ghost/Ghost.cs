@@ -29,14 +29,16 @@ public class Ghost : MonoBehaviour
     private bool GhostActive = false;
     private Player player;
     private Unit unit;
+    private Rigidbody2D rb;
+    private LayerMask blockVision;
 
     [Header("Area")]
-    private List<Room> currentRooms = new List<Room>();
+    private List<Room> currentRooms = new();
     public Room currentRoom;
 
     public List<Sprite> GhostModels;
     private int spriteID;
-    public SpriteRenderer ghostModel;
+    public GameObject ghostModel;
     public GameObject dotsModel;
 
     [Header("Roaming Movement")]
@@ -45,9 +47,13 @@ public class Ghost : MonoBehaviour
     public bool detectsPlayer = true;
     public float huntCooldown = 300f;
     private bool ghostCanHunt = false;
+    private bool wasSmudged = false;
     private bool smudged = false;
     private float lastSeenPlayerTime;
     private float stoppingDistance = 0.4f;
+    private bool chasingPlayer = false;
+    private float speedUpAmount = 0f;
+    private Coroutine smudgedCoroutine;
 
     public GhostStats[] possibleStats;
     public bool activeDots = false;
@@ -74,10 +80,12 @@ public class Ghost : MonoBehaviour
 
         GameManager.ghost = this;
         spriteID = Random.Range(0, GhostModels.Count());
-        ghostModel.sprite = GhostModels[spriteID];
-        ghostModel.enabled = false;
+        ghostModel.GetComponent<SpriteRenderer>().sprite = GhostModels[spriteID];
+        ghostModel.SetActive(false);
         player = GameManager.player;
         unit = GetComponent<Unit>();
+        rb = GetComponent<Rigidbody2D>();
+        blockVision = LayerMask.GetMask("Props", "Walls", "GhostBarrier");
     }
 
     public void Activate()
@@ -100,7 +108,7 @@ public class Ghost : MonoBehaviour
         activityOptions += stats.eventLights;
         activityOptions += stats.sabotageEquipment;
         activityOptions += stats.throwPickup;
-        if (ghostCanHunt)
+        if (ghostCanHunt && state != GhostState.Hunting)
             activityOptions += stats.hunt;
         if (stats.Scratching && (ghostCanHunt || stats.highSanityScratching))
         {
@@ -160,7 +168,7 @@ public class Ghost : MonoBehaviour
             ConditionalAction(stats.eventLights, EventLights);
             ConditionalAction(stats.sabotageEquipment, SabotageEquipment);
             ConditionalAction(stats.throwPickup, ThrowPickup);
-            if (ghostCanHunt)
+            if (ghostCanHunt && state != GhostState.Hunting)
                 ConditionalAction(stats.hunt, Hunt);
             if (stats.Scratching && (ghostCanHunt || stats.highSanityScratching))
             {
@@ -196,6 +204,8 @@ public class Ghost : MonoBehaviour
     {
 
         GhostActivity();
+        if (rb.velocity != Vector2.zero)
+            ghostModel.transform.up = rb.velocity.normalized;
         
         
         if (huntCooldown > 0)
@@ -218,6 +228,12 @@ public class Ghost : MonoBehaviour
     }
     public void RoamingMovement()
     {
+        if (detectsPlayer)
+        {
+            detectsPlayer = false;
+            SetTarget(transform.position);
+        }
+
         if (unit.ReachedDestination(stoppingDistance) || noPath)
         {
             if (Random.Range(0f, 1f) < stats.replaceRoom && !noPath)
@@ -242,59 +258,121 @@ public class Ghost : MonoBehaviour
                 noPath = false;
             }
         }
-        unit.speed = stats.defaultSpeed - unit.GetMovementPenalty() * (stats.defaultSpeed - stats.phasingSpeed)/stats.phasingPenalty;
+        float darknessBoost = Sanity.Instance.GetTotalLightIntensity(transform.position) < stats.darknessThreshold && stats.darknessBoost ? stats.darknessSpeedBoost : 0;
+        unit.speed = stats.defaultSpeed + darknessBoost - unit.GetMovementPenalty() * (stats.defaultSpeed - stats.phasingSpeed)/stats.phasingPenalty;
     }
-
     public void HuntingMovement()
     {
-        //ElectronicsBoost
-        bool boosted = false;
+        if (smudged)
+        {
+            RoamingMovement();
+            speedUpAmount = 0f;
+            return;
+        }
+
+        DetectingPlayer();
+        if (chasingPlayer)
+        {
+            if (detectsPlayer)
+            {
+                if (stats.speedUpTime != 0)
+                    speedUpAmount += Time.deltaTime / stats.speedUpTime;
+                else
+                    speedUpAmount = 1;
+            }
+            else
+            {
+                SetTarget(RoomManager.rooms[Random.Range(0, RoomManager.rooms.Count())].GetRandomPointInRoom());
+                speedUpAmount = 0;
+            }
+        }
+        else if (detectsPlayer)
+        {
+            ChaseTarget();
+        }
+        
+        if (unit.ReachedDestination(stoppingDistance) || noPath)
+        {
+            if (chasingPlayer && !noPath)
+            {
+                Player.Death();
+            }
+            else if (!noPath)
+            {
+                SetTarget(RoomManager.rooms[Random.Range(0, RoomManager.rooms.Count())].GetRandomPointInRoom());
+            }
+            else if (!chasingPlayer)
+            {
+                SetTarget(RoomManager.rooms[Random.Range(0, RoomManager.rooms.Count())].GetRandomPointInRoom());
+                noPath = false;
+            }
+        }
+
+        float electronicsBoost = 0;
         if (stats.electronicsBoostSpeed)
         {
             foreach (Item item in Interactable.electronics)
             {
-                if (StaticInteract.instance.CanReach(transform.position, item.transform.position, stats.electronicsBoostRange, stats.reachThroughWalls)) // Check if the item meets the condition
+                if (StaticInteract.instance.CanReach(transform.position, item.transform.position, stats.electronicsBoostRange, stats.canPhase)) // Check if the item meets the condition
                 {
-                    boosted = true; break;
+                    electronicsBoost = stats.electronicsSpeedBoost; break;
                 }
             }
         }
-        DetectingPlayer();
-        
-        //Need to Add Pathfinding. If boosted, hunting speed += stats.electronicsSpeedBoost
-        if (Vector2.Distance(transform.position, player.transform.position) >= stoppingDistance)
-        {
-            transform.position = Vector2.MoveTowards(transform.position, player.transform.position, stats.chasingSpeed * Time.deltaTime);
-        }
+
+        float darknessBoost = Sanity.Instance.GetTotalLightIntensity(transform.position) < stats.darknessThreshold && stats.darknessBoost ? stats.darknessSpeedBoost : 0;
+        float baseSpeed = stats.canSpeedUp ? stats.chasingSpeed * speedUpAmount + stats.defaultSpeed * (1-speedUpAmount): stats.defaultSpeed;
+        unit.speed = baseSpeed + darknessBoost + electronicsBoost - unit.GetMovementPenalty() * (stats.defaultSpeed - stats.phasingSpeed) / stats.phasingPenalty;
     }
 
     public void SetTarget(Vector2 pos)
     {
         unit.target.transform.SetParent(null);
         unit.target.transform.position = pos;
+        chasingPlayer = false;
     }
     public void ChaseTarget()
     {
         unit.target.transform.SetParent(player.transform);
         unit.target.transform.localPosition = Vector2.zero;
+        chasingPlayer = true;
     }
 
     public void DetectingPlayer()
     {
-        if (player.detectableByElectronics && Vector2.Distance(player.transform.position, transform.position) < stats.electronicsDetectionRange)
+        if (stats.alwaysTracksPlayer)
         {
             detectsPlayer = true;
             lastSeenPlayerTime = Time.time;
         }
-        else if (StaticInteract.instance.CanReach(player.transform.position, transform.position, stats.ghostVisionRange))
+        else if (player.detectableByElectronics && Vector2.Distance(player.transform.position, transform.position) < stats.electronicsDetectionRange)
         {
             detectsPlayer = true;
             lastSeenPlayerTime = Time.time;
         }
-        if (lastSeenPlayerTime + stats.trackingDuration < Time.time)
+        else if (CanSeePlayer())
+        {
+            detectsPlayer = true;
+            lastSeenPlayerTime = Time.time;
+        }
+        if (lastSeenPlayerTime + stats.ghostMemory < Time.time)
         {
             detectsPlayer = false;
         }
+    }
+    private bool CanSeePlayer()
+    {
+        float distance = Vector2.Distance(transform.position, player.transform.position);
+        if (distance > stats.ghostVisionRange)
+        {
+            return false;
+        }
+        RaycastHit2D ray = Physics2D.Raycast(transform.position, transform.position - player.transform.position, distance, blockVision);
+        if (ray.collider != null)
+        {
+            return false;
+        }
+        return true;
     }
 
     public IEnumerator HuntSequence()
@@ -305,9 +383,8 @@ public class Ghost : MonoBehaviour
 
         yield return new WaitForSeconds(stats.preHuntTimer);
 
-        ghostModel.enabled = true;
+        ghostModel.SetActive(true);
         state = GhostState.Hunting;
-        smudged = false;
         CalculateActivityTotalOptions();
 
         //Change to hunting behaviour
@@ -319,13 +396,15 @@ public class Ghost : MonoBehaviour
         state = GhostState.Roaming;
         CalculateActivityTotalOptions();
         huntCooldown = stats.huntCooldown;
-        if (smudged)
+        if (wasSmudged)
+        {
             huntCooldown += stats.smudgeTimer;
-        ghostModel.enabled = false;
+            wasSmudged = false;
+        }
+        ghostModel.SetActive(false);
         RoomManager.Instance.HuntLightsReset();
         Debug.Log("Finished Hunt");
     }
-
     private IEnumerator HuntBlinking()
     {
         float waitTime = Random.Range(stats.blinkMinRate, stats.blinkMaxRate);
@@ -333,34 +412,80 @@ public class Ghost : MonoBehaviour
 
         while (state == GhostState.Hunting)
         {
-            if (ghostModel.enabled && 2 * Random.value < stats.visibilityToggleChance + (0.5f - stats.huntingVisibleChance))
+            if (ghostModel.activeSelf && 2 * Random.value < stats.visibilityToggleChance + (0.5f - stats.huntingVisibleChance))
             {
-                ghostModel.enabled = !ghostModel.enabled;
+                ghostModel.SetActive(!ghostModel.activeSelf);
+                if (stats.huntingModelSwap)
+                {
+                    if (Random.value < stats.huntingModelSwapChance) ghostModel.GetComponent<SpriteRenderer>().sprite = GhostModels[spriteID];
+                    else ghostModel.GetComponent<SpriteRenderer>().sprite = GhostModels[Random.Range(0, GhostModels.Count)];
+                }
             }
-            else if (!ghostModel.enabled && 2 * Random.value < stats.visibilityToggleChance + (stats.huntingVisibleChance - 0.5f))
+            else if (!ghostModel.activeSelf && 2 * Random.value < stats.visibilityToggleChance + (stats.huntingVisibleChance - 0.5f))
             {
-                ghostModel.enabled = !ghostModel.enabled;
+                ghostModel.SetActive(!ghostModel.activeSelf);
+                if (stats.huntingModelSwap)
+                {
+                    if (Random.value < stats.huntingModelSwapChance) ghostModel.GetComponent<SpriteRenderer>().sprite = GhostModels[spriteID];
+                    else ghostModel.GetComponent<SpriteRenderer>().sprite = GhostModels[Random.Range(0, GhostModels.Count)];
+                }
             }
 
             waitTime = Random.Range(stats.blinkMinRate, stats.blinkMaxRate);
             yield return new WaitForSeconds(waitTime);
         }
 
-        ghostModel.enabled = false;
+        ghostModel.SetActive(false);
     }
 
-    public List<T> FindInteractionOptions<T>(List<T> items) where T : Component
+    private void Hunt()
     {
-        List<T> resultList = new List<T>(); // Clear the result list before adding filtered items
-
-        foreach (T item in items)
+        if (state != GhostState.Hunting && huntCooldown <= 0 && player.currentRoom != null)
         {
-            if (StaticInteract.instance.CanReach(transform.position, item.transform.position, stats.ghostReach, stats.reachThroughWalls)) // Check if the item meets the condition
+            //Hunt Blocked
+            foreach (Crucifix crucifix in Interactable.crucifixs)
             {
-                resultList.Add(item); // Add the item to the result list if it meets the condition
+                if (crucifix.uses > 0 && StaticInteract.instance.CanReach(transform.position, crucifix.transform.position, crucifix.range, crucifix.throughWalls || stats.reachThroughWalls))
+                {
+                    crucifix.uses--;
+                    Debug.Log("Crucifix Used");
+                    return;
+                }
             }
+
+            //Not Blocked
+            StartCoroutine(HuntSequence());
+            StartCoroutine(HuntBlinking());
         }
-        return resultList;
+        Debug.Log("The Ghost is Hunting");
+    }
+    public void TriggerEarlyHunt()
+    {
+        huntCooldown = -1;
+        Hunt();
+    }
+    public void Smudge(float smudgeDuration)
+    {
+        if (state == GhostState.Hunting)
+        {
+            if (smudged)
+            {
+                StopCoroutine(smudgedCoroutine);
+            }
+            smudgedCoroutine = StartCoroutine(Smudged(smudgeDuration));
+            wasSmudged = true;
+        }
+        else
+        {
+            huntCooldown += smudgeDuration;
+            if (huntCooldown < smudgeDuration) huntCooldown = smudgeDuration;
+        }
+    }
+    private IEnumerator Smudged(float duration)
+    {
+        smudged = true;
+        yield return new WaitForSeconds(duration);
+        smudged = false;
     }
 
     //Ghost Activity Functions
@@ -429,32 +554,6 @@ public class Ghost : MonoBehaviour
             Debug.Log("The Ghost Threw an Object");
         }
     }
-    private void Hunt()
-    {
-        if (state != GhostState.Hunting && huntCooldown <= 0 && player.currentRoom != null)
-        {
-            //Hunt Blocked
-            foreach (Crucifix crucifix in Interactable.crucifixs)
-            {
-                if (crucifix.uses > 0 && StaticInteract.instance.CanReach(transform.position, crucifix.transform.position, crucifix.range, crucifix.throughWalls || stats.reachThroughWalls))
-                {
-                    crucifix.uses--;
-                    return;
-                }
-            }
-
-            //Not Blocked
-            StartCoroutine(HuntSequence());
-            StartCoroutine(HuntBlinking());
-        }
-        Debug.Log("The Ghost is Hunting");
-    }
-
-    public void TriggerEarlyHunt()
-    {
-        huntCooldown = -1;
-        Hunt();
-    }
     private void Scratch()
     {
         Instantiate(scratchesPrefab, transform.position, transform.rotation);
@@ -473,13 +572,12 @@ public class Ghost : MonoBehaviour
         }
         Debug.Log("The Ghost is leaving Footprints");
     }
-
     private IEnumerator UV()
     {
         while (stepsRemainingUV > 0)
         {
             // Spawn the prefab at the position and rotation of the GameObject this script is attached to
-            Instantiate(footprintsPrefab, transform.position, transform.rotation);
+            Instantiate(footprintsPrefab, transform.position, Quaternion.Euler(rb.velocity.normalized));
             stepsRemainingUV--;
 
             // Wait for the specified interval before the next spawn
@@ -487,7 +585,6 @@ public class Ghost : MonoBehaviour
         }
         yield break;
     }
-
     private void Dots()
     {
         if (!activeDots)
@@ -497,7 +594,6 @@ public class Ghost : MonoBehaviour
             Debug.Log("The Ghost is Visible on Dots");
         }
     }
-
     private IEnumerator DOTS()
     {
         float elapsedTime = 0f;
@@ -509,14 +605,13 @@ public class Ghost : MonoBehaviour
         }
         activeDots = false;
     }
-
     public void SetDotsVisibility(float percentVisible)
     {
         if (activeDots && percentVisible > 0 && (!stats.dotsRequireCamera || GhostOrbs.inUse))
         {
             dotsModel.SetActive(true);
             Color c = dotsModel.GetComponent<SpriteRenderer>().color; c.a = percentVisible;
-            c = dotsModel.GetComponent<SpriteRenderer>().color = c;
+            dotsModel.GetComponent<SpriteRenderer>().color = c;
             dotsModel.GetComponent<Light2D>().intensity = percentVisible;
         }
         else
@@ -536,13 +631,43 @@ public class Ghost : MonoBehaviour
     }
     private void Trackable()
     {
-        Debug.Log("The Ghost is Trackable");
+        if (!activeGhostHunter)
+        {
+            activeGhostHunter = true;
+            StartCoroutine(CanTrack());
+            Debug.Log("The Ghost is Trackable");
+        }
+    }
+    private IEnumerator CanTrack()
+    {
+        float elapsedTime = 0f;
+
+        while (elapsedTime < stats.trackableDuration)
+        {
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+        activeGhostHunter = false;
     }
     private void Hallucination()
     {
         Debug.Log("The Ghost is Haunting You");
     }
+    
+    public List<T> FindInteractionOptions<T>(List<T> items) where T : Component
+    {
+        List<T> resultList = new(); // Clear the result list before adding filtered items
 
+        foreach (T item in items)
+        {
+            if (StaticInteract.instance.CanReach(transform.position, item.transform.position, stats.ghostReach, stats.reachThroughWalls)) // Check if the item meets the condition
+            {
+                resultList.Add(item); // Add the item to the result list if it meets the condition
+            }
+        }
+        return resultList;
+    }
+    
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Room"))
@@ -553,7 +678,6 @@ public class Ghost : MonoBehaviour
                 currentRoom.SetTargetTemperature(stats.freezingRoomTemp);
         }
     }
-
     private void OnTriggerExit2D(Collider2D collision)
     {
         if (collision.CompareTag("Room"))

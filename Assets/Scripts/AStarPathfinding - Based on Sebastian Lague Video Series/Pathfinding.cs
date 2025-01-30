@@ -25,7 +25,7 @@ public class Pathfinding : MonoBehaviour
     IEnumerator FindPath(Vector2 startPos, Vector2 targetPos)
     {
 
-        Stopwatch sw = new Stopwatch();
+        Stopwatch sw = new();
         sw.Start();
 
         Vector2[] waypoints = new Vector2[0];
@@ -38,8 +38,8 @@ public class Pathfinding : MonoBehaviour
 
         if (startNode.walkable && targetNode.walkable)
         {
-            Heap<Node> openSet = new Heap<Node>(grid.MaxSize);
-            HashSet<Node> closedSet = new HashSet<Node>();
+            Heap<Node> openSet = new(grid.MaxSize);
+            HashSet<Node> closedSet = new();
             openSet.Add(startNode);
 
             while (openSet.Count > 0)
@@ -105,12 +105,12 @@ public class Pathfinding : MonoBehaviour
 
     Vector2[] SimplifyPath(List<Node> path)
     {
-        List<Vector2> waypoints = new List<Vector2>();
+        List<Vector2> waypoints = new();
         Vector2 directionOld = Vector2.zero;
 
         for (int i = 1; i < path.Count; i++)
         {
-            Vector2 directionNew = new Vector2(path[i - 1].gridX - path[i].gridX, path[i - 1].gridY - path[i].gridY);
+            Vector2 directionNew = new(path[i - 1].gridX - path[i].gridX, path[i - 1].gridY - path[i].gridY);
             if (directionNew != directionOld)
             {
                 waypoints.Add(path[i].worldPosition);

@@ -84,14 +84,8 @@ public class GhostStats : ScriptableObject
     public bool GhostHunter9000 = false;
     [ShowIf("GhostHunter9000"), Range(0f, 100f)]
     public int trackable = 10;
-
-    //Settings - Smudge Stick
-    [Header("Settings - Smudge Stick")]
-    public bool OverrideSmudgeStick = false;
-    [ShowIf("OverrideSmudgeStick")]
-    public float smudgeTimer = 30;
-    [ShowIf("OverrideSmudgeStick")]
-    public float smudgeSpeed = 30;
+    [ShowIf("GhostHunter9000")]
+    public int trackableDuration = 8;
 
     //Settings - Ghost Activity
     [Header("Settings - Ghost Activity")]
@@ -99,21 +93,21 @@ public class GhostStats : ScriptableObject
     [ShowIf("customActivityNearPlayer")]
     public int activityNearPlayer = 15;
     public int huntingAPM = 30;
-    [Range(0f, 10f)]
+    [Range(0f, 20f)]
     public int toggleBreaker = 2;
-    [Range(0f, 10f)]
+    [Range(0f, 20f)]
     public int toggleLights = 25;
-    [Range(0f, 100f)]
+    [Range(0f, 20f)]
     public int breakLights = 4;
-    [Range(0f, 100f)]
+    [Range(0f, 20f)]
     public int eventLights = 3;
-    [Range(0f, 100f)]
+    [Range(0f, 20f)]
     public int sabotageEquipment = 30;
-    [Range(0f, 200f)]
+    [Range(0f, 80f)]
     public int throwPickup = 80;
-    [Range(0f, 100f)]
+    [Range(0f, 20f)]
     public int hallucination = 6;
-    [Range(0f, 100f)]
+    [Range(0f, 20f)]
     public int hunt = 15;
 
     //Settings - Ghost Traits
@@ -141,6 +135,8 @@ public class GhostStats : ScriptableObject
     [ShowIf("adjustVisibility"), Range(0f, 1f)]
     public float visibilityToggleChance = 0.5f;
     public bool huntingModelSwap = false; //Obake
+    [ShowIf("huntingModelSwap"),  Range(0f, 1f)]
+    public float huntingModelSwapChance = 0.2f;
     [ShowIf("Dots")]
     public bool dotsRequireCamera = false; //Goryo
     public bool alwaysTracksPlayer = false; //Deogen
@@ -190,6 +186,11 @@ public class GhostStats : ScriptableObject
     public float chasingSpeed = 3f;
     [ShowIf("canSpeedUp")]
     public float speedUpTime = 2f;
+    public bool darknessBoost = false;
+    [ShowIf("darknessBoost"), Range(0f, 2f)]
+    public float darknessSpeedBoost = 2f;
+    [ShowIf("darknessBoost"), Range(0f, 1f)]
+    public float darknessThreshold = 0.5f;
 
 
     //Settings - Roaming
@@ -206,7 +207,8 @@ public class GhostStats : ScriptableObject
     public float huntDuration = 60;
     public float huntCooldown = 60;
     public float ghostVisionRange = 30;
-    public float trackingDuration = 2.5f;
+    public float ghostMemory = 2.5f;
+    public float smudgeTimer = 30;
 
-    
+
 }

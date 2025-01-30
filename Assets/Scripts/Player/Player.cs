@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -158,5 +159,10 @@ public class Player : MonoBehaviour
                 currentRoom = currentRooms[0];
             else currentRoom = null;
         }
+    }
+
+    internal static void Death()
+    {
+        throw new NotImplementedException();
     }
 }

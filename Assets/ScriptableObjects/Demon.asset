@@ -13,22 +13,22 @@ MonoBehaviour:
   m_Name: Demon
   m_EditorClassIdentifier: 
   type: 0
-  FreezingTemps: 0
+  FreezingTemps: 1
   freezingRoomTemp: -2
   EMF: 0
   chanceOfEMF: 0.2
   UV: 0
   footprints: 14
-  Dots: 0
+  Dots: 1
   dots: 15
   dotsLength: 8
-  SpiritBox: 0
+  SpiritBox: 1
   responseChance: 0.25
   spiritBoxRangeMultiplier: 1
   GhostOrbs: 0
   orbsSpawnMin: 0.25
   orbsSpawnMax: 20
-  GhostWriting: 0
+  GhostWriting: 1
   write: 15
   MotionSensor: 0
   Salt: 0
@@ -37,22 +37,22 @@ MonoBehaviour:
   passiveScratching: 10
   huntingScratching: 8
   Hallucinations: 0
-  GhostHunter9000: 0
+  GhostHunter9000: 1
   trackable: 16
   OverrideSmudgeStick: 0
   smudgeTimer: 30
   smudgeSpeed: 30
-  activityPerMinute: 15
+  activityPerMinute: 8
   activityNearPlayer: 15
-  huntingAPM: 20
-  toggleBreaker: 2
-  toggleLights: 6
-  breakLights: 4
-  eventLights: 3
-  sabotageEquipment: 30
-  throwPickup: 42
-  hallucination: 9
-  hunt: 15
+  huntingAPM: 12
+  toggleBreaker: 3
+  toggleLights: 9
+  breakLights: 1
+  eventLights: 2
+  sabotageEquipment: 20
+  throwPickup: 45
+  hallucination: 10
+  hunt: 10
   ghostReach: 5
   throwForceMin: 2
   throwForceMax: 4
@@ -65,6 +65,7 @@ MonoBehaviour:
   huntingVisibleChance: 0.5
   visibilityToggleChance: 0.5
   huntingModelSwap: 0
+  huntingModelSwapChance: 0.2
   dotsRequireCamera: 0
   alwaysTracksPlayer: 0
   speedRelativeToDistance: 0
@@ -96,7 +97,7 @@ MonoBehaviour:
   speedUpTime: 2
   roamingRange: 6
   returnToRoom: 0.2
-  replaceRoom: 0.15
+  replaceRoom: 0.025
   gracePeriod: 300
   preHuntTimer: 4
   huntDuration: 60

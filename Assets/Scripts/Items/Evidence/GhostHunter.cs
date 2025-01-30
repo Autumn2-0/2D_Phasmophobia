@@ -20,12 +20,10 @@ public class GhostHunter : Item
         {
             currentReading = 1;
             if (GameManager.ghost.activeGhostHunter)
-                currentReading = 2;
-            if (GameManager.ghost.stats.huntsWhenTracked)
             {
-                GameManager.ghost.TriggerEarlyHunt();
+                currentReading = 2;
+                if (GameManager.ghost.stats.huntsWhenTracked) GameManager.ghost.TriggerEarlyHunt();
             }
-
         }
         if (inHand) Debug.Log(currentReading);
     }
