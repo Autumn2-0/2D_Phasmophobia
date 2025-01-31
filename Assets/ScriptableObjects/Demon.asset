@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Demon
   m_EditorClassIdentifier: 
   type: 0
+  huntingSanity: 70
   FreezingTemps: 1
   freezingRoomTemp: -2
   EMF: 0
@@ -39,10 +40,8 @@ MonoBehaviour:
   Hallucinations: 0
   GhostHunter9000: 1
   trackable: 16
-  OverrideSmudgeStick: 0
-  smudgeTimer: 30
-  smudgeSpeed: 30
-  activityPerMinute: 8
+  trackableDuration: 8
+  activityPerMinute: 25
   activityNearPlayer: 15
   huntingAPM: 12
   toggleBreaker: 3
@@ -52,16 +51,13 @@ MonoBehaviour:
   sabotageEquipment: 20
   throwPickup: 45
   hallucination: 10
-  hunt: 10
+  hunt: 20
   ghostReach: 5
   throwForceMin: 2
   throwForceMax: 4
-  huntingSanity: 0
-  blinkMinRate: 0.2
-  blinkMaxRate: 0.4
   modifyNumberOfFootprits: 0
   numberOfFootprints: 3
-  adjustVisibility: 0
+  adjustVisibility: 1
   huntingVisibleChance: 0.5
   visibilityToggleChance: 0.5
   huntingModelSwap: 0
@@ -91,10 +87,13 @@ MonoBehaviour:
   canPhase: 0
   phasingSpeed: 0.1
   phasingPenalty: 25
-  defaultSpeed: 1
+  defaultSpeed: 1.5
   canSpeedUp: 0
   chasingSpeed: 8
   speedUpTime: 2
+  darknessBoost: 0
+  darknessSpeedBoost: 2
+  darknessThreshold: 0.5
   roamingRange: 6
   returnToRoom: 0.2
   replaceRoom: 0.025
@@ -103,4 +102,7 @@ MonoBehaviour:
   huntDuration: 60
   huntCooldown: 60
   ghostVisionRange: 30
-  trackingDuration: 2.5
+  ghostMemory: 2.5
+  smudgeTimer: 30
+  blinkMinRate: 0.012
+  blinkMaxRate: 0.139

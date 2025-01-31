@@ -98,18 +98,24 @@ public class Player : MonoBehaviour
         }
 
         detectableByElectronics = false;
-        /**
-        foreach (var item in items)
+        if (GameManager.ghost.state == GhostState.Hunting)
         {
-            Item current = item.GetComponent<Item>();
-            if (current != null)
+            foreach (PickUp item in items)
             {
-                if (current.electronic && current.GetActive())
-                    detectableByElectronics = true;
+                if (item == null)
+                {
+                    continue;
+                }
+
+                if (item.gameObject.TryGetComponent<Item>(out var current))
+                {
+                    if (current.electronic && current.GetActive())
+                    {
+                        detectableByElectronics = true;
+                    }
+                }
             }
         }
-        **/
-        
     }
 
     void FixedUpdate()

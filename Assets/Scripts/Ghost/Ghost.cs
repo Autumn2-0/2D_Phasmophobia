@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.Rendering.Universal;
 using UnityEngine;
+using static UnityEditorInternal.VersionControl.ListControl;
 
 public enum GhostType
 {
@@ -27,7 +28,7 @@ public class Ghost : MonoBehaviour
     public GhostStats stats;
     public GhostState state = GhostState.Waiting;
     private bool GhostActive = false;
-    private Player player;
+    public Player player;
     private Unit unit;
     private Rigidbody2D rb;
     private LayerMask blockVision;
@@ -82,7 +83,6 @@ public class Ghost : MonoBehaviour
         spriteID = Random.Range(0, GhostModels.Count());
         ghostModel.GetComponent<SpriteRenderer>().sprite = GhostModels[spriteID];
         ghostModel.SetActive(false);
-        player = GameManager.player;
         unit = GetComponent<Unit>();
         rb = GetComponent<Rigidbody2D>();
         blockVision = LayerMask.GetMask("Props", "Walls", "GhostBarrier");
@@ -94,6 +94,7 @@ public class Ghost : MonoBehaviour
         {
             GhostActive = true;
             state = GhostState.Roaming;
+            player = GameManager.player;
         }
     }
 
@@ -276,7 +277,7 @@ public class Ghost : MonoBehaviour
             if (detectsPlayer)
             {
                 if (stats.speedUpTime != 0)
-                    speedUpAmount += Time.deltaTime / stats.speedUpTime;
+                    speedUpAmount = Mathf.MoveTowards(speedUpAmount, 1, Time.deltaTime / stats.speedUpTime);
                 else
                     speedUpAmount = 1;
             }
@@ -363,11 +364,12 @@ public class Ghost : MonoBehaviour
     private bool CanSeePlayer()
     {
         float distance = Vector2.Distance(transform.position, player.transform.position);
+        Vector3 direction = (transform.position - player.transform.position).normalized;
         if (distance > stats.ghostVisionRange)
         {
             return false;
         }
-        RaycastHit2D ray = Physics2D.Raycast(transform.position, transform.position - player.transform.position, distance, blockVision);
+        RaycastHit2D ray = Physics2D.Raycast(transform.position - direction/2, direction, distance, blockVision);
         if (ray.collider != null)
         {
             return false;
@@ -377,15 +379,15 @@ public class Ghost : MonoBehaviour
 
     public IEnumerator HuntSequence()
     {
-        Debug.Log("Started Hunt");
+        Debug.Log("Started PreHunt");
         state = GhostState.Waiting;
         RoomManager.Instance.LockDoor();
 
         yield return new WaitForSeconds(stats.preHuntTimer);
 
-        ghostModel.SetActive(true);
+        Debug.Log("Started Hunting");
         state = GhostState.Hunting;
-        CalculateActivityTotalOptions();
+        StartCoroutine(HuntBlinking());
 
         //Change to hunting behaviour
 
@@ -393,20 +395,20 @@ public class Ghost : MonoBehaviour
 
         //Change to Roaming behaviour
 
+        Debug.Log("Hunting Ended");
         state = GhostState.Roaming;
-        CalculateActivityTotalOptions();
         huntCooldown = stats.huntCooldown;
         if (wasSmudged)
         {
             huntCooldown += stats.smudgeTimer;
             wasSmudged = false;
         }
-        ghostModel.SetActive(false);
         RoomManager.Instance.HuntLightsReset();
         Debug.Log("Finished Hunt");
     }
     private IEnumerator HuntBlinking()
     {
+        ghostModel.SetActive(true);
         float waitTime = Random.Range(stats.blinkMinRate, stats.blinkMaxRate);
         yield return new WaitForSeconds(waitTime);
 
@@ -455,9 +457,13 @@ public class Ghost : MonoBehaviour
 
             //Not Blocked
             StartCoroutine(HuntSequence());
-            StartCoroutine(HuntBlinking());
+            Debug.Log("The Ghost is Hunting");
         }
-        Debug.Log("The Ghost is Hunting");
+
+        if (state == GhostState.Hunting) Debug.Log("Can't start a Hunt during a Hunt");
+        if (huntCooldown > 0) Debug.Log("Can't start a Hunt before the cooldown ends");
+        if (player.currentRoom == null) Debug.Log("Can't start a Hunt when the player is outside");
+
     }
     public void TriggerEarlyHunt()
     {
@@ -486,6 +492,7 @@ public class Ghost : MonoBehaviour
         smudged = true;
         yield return new WaitForSeconds(duration);
         smudged = false;
+        HuntBlinking();
     }
 
     //Ghost Activity Functions

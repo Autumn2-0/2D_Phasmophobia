@@ -8,6 +8,8 @@ using UnityEngine;
 public class GhostStats : ScriptableObject
 {
     public GhostType type;
+    [Range(0, 100)]
+    public int huntingSanity = 70;
 
     //Settings - Freezing Temps
     [Header("Settings - Freezing Temperature")]
@@ -111,18 +113,11 @@ public class GhostStats : ScriptableObject
     public int hunt = 15;
 
     //Settings - Ghost Traits
-    [Header("Settings - Ghost Traits")] //Related to different evidence gathering items
-    //Ghost Reach
+    [Header("Settings - Ghost Stats")]
     public float ghostReach = 5f;
-    //Throw
     public float throwForceMin = 2f;
     public float throwForceMax = 4f;
-    //Hunting
-    public int huntingSanity = 70;
-    [Range(0f, 1f)]
-    public float blinkMinRate = 0.2f;
-    [Range(0f, 1f)]
-    public float blinkMaxRate = 0.4f;
+    
 
     [Header("Settings - Unique Traits")]
     [ShowIf("UV")]
@@ -165,11 +160,11 @@ public class GhostStats : ScriptableObject
     public bool huntsWhenTracked = false; //New Ghost
     public bool reachThroughWalls = false; //New Ghost
     public bool additionalSanityDrain = false; //New Ghosts
-    [ShowIf("GhostHunter9000")]
+    [ShowIf("additionalSanityDrain")]
     public float sanityDrainModifier = 1;
-    [ShowIf("GhostHunter9000"), Range(0f,1f)]
+    [ShowIf("additionalSanityDrain"), Range(0f,1f)]
     public float roomSanityDrain = 0f;
-    [ShowIf("GhostHunter9000"), Range(0f, 1f)]
+    [ShowIf("additionalSanityDrain"), Range(0f, 1f)]
     public float proximitySanityDrain = 0f;
 
     //Settings - Ghost Movement
@@ -209,6 +204,10 @@ public class GhostStats : ScriptableObject
     public float ghostVisionRange = 30;
     public float ghostMemory = 2.5f;
     public float smudgeTimer = 30;
+    [Range(0f, 1f)]
+    public float blinkMinRate = 0.2f;
+    [Range(0f, 1f)]
+    public float blinkMaxRate = 0.4f;
 
 
 }
