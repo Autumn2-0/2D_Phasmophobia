@@ -87,9 +87,9 @@ MonoBehaviour:
   canPhase: 0
   phasingSpeed: 0.1
   phasingPenalty: 25
-  defaultSpeed: 0.4
-  canSpeedUp: 0
-  chasingSpeed: 8
+  defaultSpeed: 1
+  canSpeedUp: 1
+  chasingSpeed: 0
   speedUpTime: 2
   darknessBoost: 0
   darknessSpeedBoost: 2

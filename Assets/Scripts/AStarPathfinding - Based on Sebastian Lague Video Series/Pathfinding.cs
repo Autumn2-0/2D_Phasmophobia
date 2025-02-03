@@ -89,7 +89,7 @@ public class Pathfinding : MonoBehaviour
 
     Vector2[] RetracePath(Node startNode, Node endNode)
     {
-        List<Node> path = new List<Node>();
+        List<Node> path = new();
         Node currentNode = endNode;
 
         while (currentNode != startNode)
